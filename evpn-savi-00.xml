@@ -443,8 +443,6 @@ This would be an example of host mobility use case.
 </t>
 <figure anchor='theft'><name>Remote active - IP theft</name>
 <artwork><![CDATA[
-012345678901234567890123456789012345678901234567890123456789012345678901
-
 
                       local VTEP                  remote VTEP
            + - - - - -  - -  - - - - - - +  +--- - - - - - - +
