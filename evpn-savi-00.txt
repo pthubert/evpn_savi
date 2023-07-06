@@ -1,0 +1,728 @@
+
+
+
+
+6MAN                                                    E. Levy-Abegnoli
+Internet-Draft                                                P. Thubert
+Intended status: Informational                               R. Kovacina
+Expires: 7 January 2024                                    Cisco Systems
+                                                             6 July 2023
+
+
+                        SAVI in an eVPN network
+                 draft-ietf-levy-abegnoli-evpn-savi-00
+
+Abstract
+
+   Source Address Validation procedures have been specified in the SAVI
+   Working Group and provide a set of mechanisms and state machines to
+   verify Source Address ownership.  The main mechanisms are described
+   in [RFC6620] and [RFC7513].
+
+   [RFC7432] and furthermore [RFC9161] specify how an eVPN network could
+   learn and distribute IP addresses.  [RFC9161] describes a mechanism
+   by which the PE can proxy some ND messages based on this information.
+
+   In this document, we review how these two sets of specifications and
+   underlying mechanisms can interact to provide Source Address
+   Validation in an eVPN netwrok.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 7 January 2024.
+
+Copyright Notice
+
+   Copyright (c) 2023 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 1]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Acronyms  . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+   3.  Deployment models . . . . . . . . . . . . . . . . . . . . . .   3
+   4.  DHCP assigned addresses . . . . . . . . . . . . . . . . . . .   5
+     4.1.  SAVI-DHCP background  . . . . . . . . . . . . . . . . . .   5
+     4.2.  Interactions between RFC7513 and EVPN . . . . . . . . . .   6
+   5.  SLAAC and other IPv6 addresses  . . . . . . . . . . . . . . .   6
+     5.1.  SAVI-FCFS background  . . . . . . . . . . . . . . . . . .   6
+     5.2.  Interactions between SAVI-FCFS and EVPN . . . . . . . . .   6
+   6.  Enhanced SAVI/EVPN interactions . . . . . . . . . . . . . . .   8
+     6.1.  Address not found . . . . . . . . . . . . . . . . . . . .   9
+     6.2.  Address found in BGP/EVPN table, remote not active  . . .   9
+     6.3.  Address found in BGP/EVPN table, remote active  . . . . .  10
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  11
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
+   9.  Contributors  . . . . . . . . . . . . . . . . . . . . . . . .  11
+   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
+   11. Normative References  . . . . . . . . . . . . . . . . . . . .  11
+   12. Informative References  . . . . . . . . . . . . . . . . . . .  12
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
+
+1.  Introduction
+
+   SAVI specification [RFC6620] describes a mechanism that provides
+   Source Address Validation (Improvements) for IPv6 networks based the
+   First Come First Serve principle, applicable to any type of IPv6
+   addresses, including those assigned through SLAAC.  According to the
+   specification, an IPv6 entry freshly snooped on a SAVI device need to
+   reach the "VALID " state before traffic sourced with it can be
+   forwarded.
+
+   SAVI specification [RFC7513] describes a similar mechanism for
+   addresses assigned by DHCPv6/DHCPv4 server.  Again, traffic sourced
+   which such addresses can only be forwarded when the address state is
+   "BOUND".
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 2]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   EVPN specification [RFC7432], section 10, indicates that a PE may
+   learn IP addresses and advertise them to other PEs.  It allows PEs to
+   execute proxy ARP/ND function specified in more details in [RFC9161].
+   This EVPN specification details the learning steps for IPv6
+   addresses.  According to section 3.2, IPv6 addresses should be learnt
+   by snooping Neighbor Advertisements (NA), then advertised in an EVPN
+   MAC/IP Advertisement route, and finally used on remote PEs to perform
+   a proxy-ND function.
+
+   Assuming one would want to perform Source Address Validation in an
+   EVPN network, two models can be deployed:
+
+   1.  SAVI function run on SAVI switches external to PEs
+
+   2.  SAVI function is co-located with the PEs
+
+   These two models are reviewed in Section 3.  Corresponding
+   interactions between SAVI and eVPN are reviewed as well in this
+   document.
+
+2.  Acronyms
+
+   This document uses the following abbreviations:
+
+   DAD:  Duplicate address Detection
+   NA:  Neighbor Advertisement (message)
+   ND:  Neighbor Discovery (protocol)
+   NDP:  Neighbor Discovery Protocol
+   NS:  Neighbor Solicitation (message)
+   VLAN:  Virtual Local Area Network
+   VxLAN:  Virtual Extensible LAN
+   eVPN:  Ethernet Virtual Private Network
+   VTEP:  VXLAN Tunnel EndPoint
+   BGP:  Border Gateway Protocol
+
+3.  Deployment models
+
+   In model 1, a SAVI device is inserted between client (host or CE) and
+   PE (or VTEP).  This first model is straight forward and does not
+   require any additional specification.  It is presented in Figure 1.
+
+
+
+
+
+
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 3]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   The SAVI devices operate as a verification perimeter between
+   untrusted clients (CEs or Hosts) and PEs (or VTEPs).  As specified in
+   [RFC6620] and [RFC7513], only validated addresses can inject traffic
+   over the trusted perimeter.  The mechanisms to validate addresses are
+   specified in these two RFCs.  As long as an address is not validated,
+   the only messages allowed from the SAVI device towards the EVPN
+   (VTEP) networks are IPv6 ND DAD messages (sourced with zero), which
+   are not used by EVPN proxy for learning.  Therefore, as long as an
+   address is not validated by SAVI, it remains unknown by EVPN.
+
+                             protection perimeter
+           +- - - - - - - - - - - - - - - - - - - - - - - - - - -+
+           |                                                     |
+           |                  trusted perimeter                  |
+           |            +- - - - - - - - - - - - - -+            |
+           |            |                           |            |
+           |            |         L3 NETWORK        |            |
+           |            |  VTEP                VTEP |            |
++--------+ | +------+  ++------+             +------++  +------+ | +--------+
+|        | | | SAVI |  |       |             |       |  | SAVI | | |        |
+| HOST/CE| | |      |  |EVPN/PE|             |EVPN/PE|  |      | | | HOST/CE|
+|        | | |device|  |       |             |       |  |device| | |        |
++--------+ | +------+  ++------+             +------++  +------+ | +--------+
+           |            |                           |            |
+           |            |                           |            |
+           |            |                           |            |
+           |            |                           |            |
+           |            +- - - - - - - - - - - - - -+            |
+           |                                                     |
+           |                                                     |
+           +- - - - - - - - - - - - - - - - - - - - - - - - - - -+
+
+                     Figure 1: Deployment model 1
+
+   In model 2, the SAVI device and the PE/VTEP are colapsed into the
+   same box.  SAVI device is referenced as a "SAVI instance".  This
+   model is presented in Figure 2.
+
+   Model2 is fundamentally the same as the model1.  SAVI instance acts
+   as a Security wall between untrusted clients and the VTEPs, and only
+   allows validated sources to inject traffic beyond the VTEP.  The
+   injection happens over an API between SAVI instance and eVPN rather
+   than over a physical wire.  Furthermore, only validated sources are
+   learnt per section 3.2 of [RFC9161].
+
+
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 4]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+                               protection perimeter
+           +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+           |                                                          |
+           |                    trusted perimeter                     |
+           |              +- - - - - - - - - - - - - -+               |
+           |              |                           |               |
+           |              |         L3 NETWORK        |               |
+           |     VTEP/PE  |                           | VTEP/PE       |
++--------+ | +----------+-+------+             +------+-+----------+  | +--------+
+|        | | | SAVI     |        |             |        |   SAVI   |  | |        |
+| HOST/CE| | |         API  EVPN |             | EVPN  API         |  | | HOST/CE|
+|        | | | instance |        |             |        | instance |  | |        |
++--------+ | +----------+-+------+             +------+-+----------+  | +--------+
+           |              |                           |               |
+           |              |                           |               |
+           |              |                           |               |
+           |              |                           |               |
+           |              +- - - - - - - - - - - - - -+               |
+           |                                                          |
+           |                                                          |
+           +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+                              protection perimeter
+
+
+
+                     Figure 2: Deployment model 2
+
+   In this model however, it is possible and even desirable to leverage
+   the knowledge of remote IP entries stored in the VTEP BGP tables to
+   make SAVI validation process more efficient.  This is described in
+   section Section 6
+
+   The next section review interactions between SAVI and EVPN for
+   different type of addresses
+
+4.  DHCP assigned addresses
+
+4.1.  SAVI-DHCP background
+
+   SAVI-DHCP specification [RFC7513] describes a mechanism that provides
+   source address validation for IPv6 networks where addresses are
+   assigned by DHCPv6 server.  The address validation is achieved by
+   snooping DHCPv6 address assignments, which is known as DHCP Snooping,
+   or validating discovered address with the DHCP server which is
+   described as Data Snooping process.  Both processes are described in
+   detail in [RFC7513].
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 5]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   During DHCP Snooping process and associated state machine, an IP
+   entry freshly snooped on a SAVI device progresses from NO_BIND to
+   BOUND.
+
+4.2.  Interactions between RFC7513 and EVPN
+
+   The whole DHCP address assignment procedure is performed using IPv6
+   Link-Local addresses, which are expected to be VALID prior to the
+   beginning of this process.  The DHCP server or relay can then be
+   located anywhere in the eVPN network without the DHCP messages being
+   blocked by SAVI.  eVPN itself does not learn from DHCP, so until the
+   address is assigned, DAD completed and the host have sent an NA
+   (response to a lookup or unsolicited NA), eVPN does not know about
+   the assigned address.  After the NA is sent, the address can be
+   learnt by eVPN, stored locally by the eVPN proxy-ND and distributed
+   by BGP per [RFC9161].
+
+5.  SLAAC and other IPv6 addresses
+
+5.1.  SAVI-FCFS background
+
+   According to [RFC6620], any address, used as the source of a packet
+   or showing up as a target of a Neighbor Solicit (NS) message
+   (including a DAD NS) which is not locally known and validated is
+   treated as a TENTATIVE address and a DAD NS (Duplicate Address
+   Detection Neighbor Solicit) with this address in the target field is
+   originated by the SAVI device and broadcasted to any validated or
+   trusted port.  A response received implies a duplication and/or IP
+   theft and on the contrary, no response allow to progress the state of
+   the address from TENTATIVE to VALID.
+
+5.2.  Interactions between SAVI-FCFS and EVPN
+
+   Main interactions are listed below:
+
+   *  Sources not validated by SAVI are not learnt nor distributed by
+      EVPN: SAVI does not allow NA to be forwarded (model 1) or signaled
+      (model 2) to EVPN.
+
+   *  During the validation process for a Source, SAVI (ingress)
+      originates a broadcast DAD, with target set to "Source" and
+      forward (model1) or signal (model2) it to eVPN which delivers it
+      to remote SAVI devices (over the wire or an API).  Only SAVI
+      devices that have a local validated entry or a trusted interface
+      forward the DAD to enable the target to defend itself.
+
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 6]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   *  In case a response is sent by one of the DAD recipients, it is a
+      broadcast NA (to "all-nodes"), processed by SAVI (egress).  The
+      source is a SAVI validated source, and as such, delivered from
+      (egress) SAVI to EVPN for delivery to all VTEPs and finally to
+      (ingress) SAVI to complete the validation process of the target
+      "Source".
+
+   *  The first NA sent by this Source triggers eVPN proxy learning and
+      eVPN distribution to all VTEPs per [RFC9161]
+
+   The flow below show two sequences, A and B, with A where Host does
+   not respond to DAD send by SAVI and B where host does repond.
+   Sequence goes like this for A:
+
+   1.  data sourced with S is received on the ingress SAVI instance.  An
+       entry for S is created in TENTATIVE state
+
+   2.  A DAD is build with target=S and broadcasted to all SAVI
+       instances over the EVPN network
+
+   3.  Only instances that have the entry "VALID" or trusted ports
+       forward the DAD
+
+   In the absence of a response from HOST, entry state at the ingress
+   SAVI progresses to VALID
+
+   For B, after step 3:
+
+   4.  HOST responds to DAD with an NA
+
+   Upon receiving the NA, the ingress SAVI instance move the entry to
+   NO_BIND and does not allow traffic from this source to be forwarded.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 7]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+                                 layer3 network
+                               +------------------+
+                  VTEP         |                  |      VTEP
++--------+      +--------+-----+--+             +-+------+--------+       +--------+
+|        |      |        |        |             |        |        |       |        |
+| HOST   |      |  SAVI  |   EVPN |             | EVPN   |  SAVI  |       | HOST   |
+|        |      |        |        |             |        |        |       |        |
++----+---+      +----+---+---+-+--+             +-+--+---+---+----+       +----+---+
+     |               |       | |                  |  |       |                 |
+     |               |       | +------------------+  |       |                 |
+     |(1)data, src=S |       |                       |      S in VALID         |
+     +-------------->|       |                       |      state              |
+     |               |       |                       |       |                 |
+     |          S: TENTATIVE |                       |       |                 |
+     |               |       |(2)DAD NS, target=S    |       |                 |
+     |       +-      +-------+-----------------------+------>|(3)DAD NS        |
+     |       |       |       |                       |       +---------------->|
+     |       |     timeout   |                       |       |                 |
+     |       |       |       |                       |       |                 |
+     |   A   |       |       |                       |       |                 |
+     |       |  S: VALID     |                       |       |                 |
+     |       |       |       |                       |       |                 |
+     |       |       |       |                       |       |                 |
+     |       +-      |       |                       |       |                 |
+     |               |       |(2)DAD NS, target=S    |       |                 |
+     |       +-      +-------+-----------------------+------>|(3)DAD NS        |
+     |       |       |       |                       |       +---------------->|
+     |       |       |       |(4)NA to all_nodes(4)  |       |                 |
+     |   B   |       |<------+-----------------------+-------+-----------------+
+     |       |       |       |                       |       |                 |
+     |       |  S: NO_BIND   |                       |       |                 |
+     |       +-      |       |                       |       |                 |
+     |               |       |                       |       |                 |
+     |               |       |                       |       |                 |
+
+
+                         Figure 3: FCFS-SAVI
+
+6.  Enhanced SAVI/EVPN interactions
+
+   In model2 where SAVI is co-located with BGP and eVPN proxy table,
+   upon starting the validation process for an address, SAVI MAY perform
+   a lookup into EVPN/BGP proxy table, where entry can be 1) not found,
+   2) local or 3)remote.
+
+   If the entry is local, this is an error as it is expected only VALID
+   entries should be learnt by EVPN ND proxy.  The entry in the proxy
+   table MUST be deleted.
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 8]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   Other cases are described in the next sections
+
+   As described in [RFC6620], when validating source address which is
+   not known to in the local SAVI table, multicast DAD NS message is
+   sent to all remote SAVI instances to check for the presence of this
+   address on any of these instances.  This process can be optimized by
+   leveraging the content of EVPN / BGP tables on VTEPs and "unicast-
+   forward" the DAD to the known address owner, if any.
+
+   Depending on the presence of the address in the BGP table and if
+   present, whether the address is active or not, there are three
+   possible scenarios as described below.
+
+   1.  Address not found in BGP/EVPN table
+
+   2.  Address found in BGP/EVPN table, remote not active
+
+   3.  Address found in BGP/EVPN table, remote active
+
+6.1.  Address not found
+
+   When the source address that is being validated by SAVI process is
+   not present in the BGP / EVPN table, it means that is was not learned
+   on any of the remote VTEPs which indicates that none of the remote
+   SAVI devices have the entry for that source address in VALID state.
+   Based on the validation process described in [RFC6620], in such
+   scenario the multicast NS DAD MAY NOT be forwarded over the EVPN
+   network and the SAVI entry MAY move directly to VALID state.
+
+   Note that to prevent race condition where a host is VALID in the
+   local SAVI instance but not yet present in the EVPN proxy table, SAVI
+   MAY signal the entry to EVPN as soon as it becomes VALID.
+
+6.2.  Address found in BGP/EVPN table, remote not active
+
+   When the source address that is being validated by SAVI process is
+   present in the BGP / EVPN table, then the multicast NS DAD sent by
+   SAVI can be "unicast-forwarded" per section 3.4.  "Unicast-Forward
+   Sub-function" of [RFC9161].
+
+   If the address is no longer active on the remote location, there will
+   be no response and the validation process will follow the steps as
+   specified in [RFC6620] to move the entry to VALID state.  Once the
+   entry is in VALID state, the traffic forwarded from that address will
+   be forwarded into EVPN network and the IP address will be learned by
+   the EVPN.  This is shown in Figure 4
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 9]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   SAVI instance MAY signal the entry to EVPN as soon as it becomes
+   VALID.
+
+   This would be an example of host mobility use case.
+
+                                 local VTEP                                  remote VTEP
+                 + - - - - -  - - - - - - - - - - - - - +        +- - - - - -- - - - - - - - - - +
+ +--------+      | +---------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
+ |        |      | | local   |              |         | |        |  |         |    |           | |    |         |
+ | Client |      | | SAVI    |<----API----->|  EVPN   | |        |  |   EVPN  |    | SAVI      | |    | Client  |
+ +--------+      | +---------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
+     |           + - - | - -  - - - - - - - - - | - - - +        +- - | - - - -- - - - -| - - - -+         |
+     |     src=IP      |                        |                     |              IP in VALID           |
+     +---------------->+                        |                     |              state                 |
+     |                 |                        |                     |                 |                  |
+     |                 | Lookup EVPN/BGP for IP |                     |                 |                  |
+     |                 +----------------------->+                     |                 |                  |
+     |                 | IP FOUND, MAC <> IP    |                     |                 |                  |
+     |                 <------------------------+                     |                 |                  |
+     |                 |                        |                     |                 |                  |
+     |                 |                unicast NS DAD to MAC         |                 |                  |
+     |                 +----------------------------------------------------------------> --------->       |
+     |                 |                        |                     |                 |                  |
+     |                 |No response             |                     |                 |No response       |
+     |                 |entry moved to VALID    |                     |                 |
+     |                 +                        |                     |                 |
+     |            NA is allowed to reach EVPN   |                     |                 |
+     +----------------------------------------->+--------------------------------------->
+     +                                          |  IP learned in BGP  |               IP in NO_BIND
+                                                +-------------------->+               state
+
+              Figure 4: Remote not responding - Mobility
+
+6.3.  Address found in BGP/EVPN table, remote active
+
+   As in previous section, local SAVI sends the multicast NS DAD to the
+   known (by eVPN, as a remote entry) target but this time, but this
+   time, the target responds with a multicast NA.  The validation
+   process will follow the steps as specified in [RFC6620] and move the
+   entry to NO_BIND state.  Any NA received on this local SAVI instance
+   from the validating port will not be signalled to EVPN and will not
+   be learnt by eVPN ND proxy.  This is a IP duplication / theft use
+   case and should be signalled through logging or by triggering an
+   alarm.
+
+   This is shown in Figure 5
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 10]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+                                       local VTEP                                  remote VTEP
+                      +- - - - - - - - - - - - - - - - - - - - +        +- - - - - -- - - - - - - - - - +
+   +---------+        |  +----------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
+   |         |        |  | local    |              |         | |        |  |         |    |           | |    |         |
+   | Client  |        |  | SAVI     |<----API----->|  EVPN   | |        |  |   EVPN  |    | SAVI      | |    | Client  |
+   +---------+        |  +----------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
+       |              +- - - | - - - - - - - - - - - - | - - - +        +- - | - - - -- - - - -| - - - -+         |
+       |        src=IP       |                         |                     |             IP in VALID            |
+       +-------------------->+                         |                     |             state                  |
+       |                     |                         |                     |                 |                  |
+       |                     | Lookup EVPN/BGP for IP  |                     |                 |                  |
+       |                     +------------------------>+                     |                 |                  |
+       |                     | IP FOUND, MAC <> IP     |                     |                 |                  |
+       |                     <-------------------------+                     |                 |                  |
+       |                     |                         |                     |                 |                  |
+       |                     |                 unicast NS DAD to MAC         |                 |                  |
+       |                     +-----------------------------------------------------------------> ---------------->|
+       |                     |                         |                     |                 |          NA      |
+       |                     |                         |                     |                 | <----------------|
+       |                     |                         |                     |    NA    allowed|                  |
+       |                     +<----------------------------------------------------------------|                  |
+       |                     |                         |                     |                 |                  |
+       |                     | Entry in NO_BIND state  |                     |                 |                  |
+       |                     | traffic from that src IP|                     |                 |                  |
+       |         NA          | is DROPPED and not      |                     |                 |                  |
+       +-------------------->+ visible to EVPN/BGP     |                     |                 |                  |
+       |                     |                         |                     |                 |                  |
+
+
+                  Figure 5: Remote active - IP theft
+
+7.  Security Considerations
+
+8.  IANA Considerations
+
+   This specification does not require IANA action.
+
+9.  Contributors
+
+10.  Acknowledgments
+
+11.  Normative References
+
+   [RFC4861]  Narten, T., Nordmark, E., Simpson, W., and H. Soliman,
+              "Neighbor Discovery for IP version 6 (IPv6)", RFC 4861,
+              DOI 10.17487/RFC4861, September 2007,
+              <https://www.rfc-editor.org/info/rfc4861>.
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 11]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   [RFC6620]  Nordmark, E., Bagnulo, M., and E. Levy-Abegnoli, "FCFS
+              SAVI: First-Come, First-Served Source Address Validation
+              Improvement for Locally Assigned IPv6 Addresses",
+              RFC 6620, DOI 10.17487/RFC6620, May 2012,
+              <https://www.rfc-editor.org/info/rfc6620>.
+
+   [RFC7513]  Bi, J., Wu, J., Yao, G., and F. Baker, "Source Address
+              Validation Improvement (SAVI) Solution for DHCP",
+              RFC 7513, DOI 10.17487/RFC7513, May 2015,
+              <https://www.rfc-editor.org/info/rfc7513>.
+
+   [RFC7432]  Sajassi, A., Ed., Aggarwal, R., Bitar, N., Isaac, A.,
+              Uttaro, J., Drake, J., and W. Henderickx, "BGP MPLS-Based
+              Ethernet VPN", RFC 7432, DOI 10.17487/RFC7432, February
+              2015, <https://www.rfc-editor.org/info/rfc7432>.
+
+   [RFC9161]  Rabadan, J., Ed., Sathappan, S., Nagaraj, K., Hankins, G.,
+              and T. King, "Operational Aspects of Proxy ARP/ND in
+              Ethernet Virtual Private Networks", RFC 9161,
+              DOI 10.17487/RFC9161, January 2022,
+              <https://www.rfc-editor.org/info/rfc9161>.
+
+12.  Informative References
+
+   [RFC4291]  Hinden, R. and S. Deering, "IP Version 6 Addressing
+              Architecture", RFC 4291, DOI 10.17487/RFC4291, February
+              2006, <https://www.rfc-editor.org/info/rfc4291>.
+
+   [RFC4862]  Thomson, S., Narten, T., and T. Jinmei, "IPv6 Stateless
+              Address Autoconfiguration", RFC 4862,
+              DOI 10.17487/RFC4862, September 2007,
+              <https://www.rfc-editor.org/info/rfc4862>.
+
+Authors' Addresses
+
+   Eric Levy-Abegnoli
+   Cisco Systems, Inc
+   Building D
+   45 Allee des Ormes - BP1200
+   06254 Mougins - Sophia Antipolis
+   France
+
+   Phone: +33 497 23 26 20
+   Email: elevyabe@cisco.com
+
+
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 12]
+
+Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   Pascal Thubert
+   Cisco Systems, Inc
+   Building D
+   45 Allee des Ormes - BP1200
+   06254 Mougins - Sophia Antipolis
+   France
+
+   Phone: +33 497 23 26 34
+   Email: pthubert@cisco.com
+
+
+   Ratko Kovacina
+   Cisco Systems, Inc
+   2000 Innovation Dr
+   Kanata, ON K2K 3E8, Canada  ON K2K 3E8
+   Canada
+
+   Phone: +1 613 254 4545
+   Email: rkovacin@cisco.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 13]
