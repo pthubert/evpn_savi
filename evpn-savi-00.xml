@@ -396,31 +396,33 @@ This would be an example of host mobility use case.
 </t>
 <figure anchor='mobility'><name>Remote not responding - Mobility</name>
 <artwork><![CDATA[
-                                 local VTEP                                  remote VTEP
-                 + - - - - -  - - - - - - - - - - - - - +        +- - - - - -- - - - - - - - - - + 
- +--------+      | +---------+              +---------+ |        |  +---------+    +-----------+ |    +---------+     
- |        |      | | local   |              |         | |        |  |         |    |           | |    |         |
- | Client |      | | SAVI    |<----API----->|  EVPN   | |        |  |   EVPN  |    | SAVI      | |    | Client  |
- +--------+      | +---------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
-     |           + - - | - -  - - - - - - - - - | - - - +        +- - | - - - -- - - - -| - - - -+         |
-     |     src=IP      |                        |                     |              IP in VALID           |
-     +---------------->+                        |                     |              state                 |
-     |                 |                        |                     |                 |                  |
-     |                 | Lookup EVPN/BGP for IP |                     |                 |                  |
-     |                 +----------------------->+                     |                 |                  |
-     |                 | IP FOUND, MAC <> IP    |                     |                 |                  |
-     |                 <------------------------+                     |                 |                  |
-     |                 |                        |                     |                 |                  |
-     |                 |                unicast NS DAD to MAC         |                 |                  |
-     |                 +----------------------------------------------------------------> --------->       |
-     |                 |                        |                     |                 |                  |
-     |                 |No response             |                     |                 |No response       |
-     |                 |entry moved to VALID    |                     |                 |
-     |                 +                        |                     |                 |
-     |            NA is allowed to reach EVPN   |                     |                 |
-     +----------------------------------------->+---------------------------------------> 
-     +                                          |  IP learned in BGP  |               IP in NO_BIND
-                                                +-------------------->+               state         
+                               local VTEP                    remote VTEP
+               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - + 
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+     
+ |        |    | | local   |         |         | |    | |       | |     | |   |      |
+ | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
+     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
+     |   src=IP      |                   |                |      IP in VALID     |
+     +-------------->+                   |                |      state           |
+     |               |                   |                |          |           |
+     |               | Lookup EVPN/BGP   |                |          |           |
+     |               | for IP            |                |          |           |
+     |               +------------------>+                |          |           |
+     |               | IP FOUND, MAC<>IP |                |          |           |
+     |               <-------------------+                |          |           |
+     |               |                   |                |          |           |
+     |               |           unicast NS DAD to MAC    |          |           |
+     |               +----------------------------------------------> ---------> |
+     |               |                   |                |          |           |
+     |               |No response        |                |          |No response|
+     |               |entry moved to VALID                |          |
+     |               +                   |                |          |
+     |     NA is allowed to reach EVPN   |                |          |
+     +---------------------------------->+--------------------------> 
+     +                                   | IP learned in  |   IP in NO_BIND
+     |                                   | BGP            |   state 
+                                         +---------------> 
     ]]></artwork>
 </figure>
 </section><!--"Address found in BGP/EVPN table, remote not active"-->
@@ -438,34 +440,34 @@ This would be an example of host mobility use case.
 </t>
 <figure anchor='theft'><name>Remote active - IP theft</name>
 <artwork><![CDATA[
-
-                                       local VTEP                                  remote VTEP
-                      +- - - - - - - - - - - - - - - - - - - - +        +- - - - - -- - - - - - - - - - + 
-   +---------+        |  +----------+              +---------+ |        |  +---------+    +-----------+ |    +---------+     
-   |         |        |  | local    |              |         | |        |  |         |    |           | |    |         |
-   | Client  |        |  | SAVI     |<----API----->|  EVPN   | |        |  |   EVPN  |    | SAVI      | |    | Client  |
-   +---------+        |  +----------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
-       |              +- - - | - - - - - - - - - - - - | - - - +        +- - | - - - -- - - - -| - - - -+         |
-       |        src=IP       |                         |                     |             IP in VALID            |
-       +-------------------->+                         |                     |             state                  |
-       |                     |                         |                     |                 |                  |
-       |                     | Lookup EVPN/BGP for IP  |                     |                 |                  |
-       |                     +------------------------>+                     |                 |                  |
-       |                     | IP FOUND, MAC <> IP     |                     |                 |                  |
-       |                     <-------------------------+                     |                 |                  |
-       |                     |                         |                     |                 |                  |
-       |                     |                 unicast NS DAD to MAC         |                 |                  |
-       |                     +-----------------------------------------------------------------> ---------------->|
-       |                     |                         |                     |                 |          NA      |
-       |                     |                         |                     |                 | <----------------|
-       |                     |                         |                     |    NA    allowed|                  |
-       |                     +<----------------------------------------------------------------|                  |
-       |                     |                         |                     |                 |                  |
-       |                     | Entry in NO_BIND state  |                     |                 |                  |
-       |                     | traffic from that src IP|                     |                 |                  |
-       |         NA          | is DROPPED and not      |                     |                 |                  |
-       +-------------------->+ visible to EVPN/BGP     |                     |                 |                  |
-       |                     |                         |                     |                 |                  |
+                               local VTEP                    remote VTEP
+               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - + 
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+     
+ |        |    | | local   |         |         | |    | |       | |     | |   |      |
+ | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
+     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
+     |   src=IP      |                   |                |      IP in VALID     |
+     +-------------->+                   |                |      state           |
+     |               |                   |                |          |           |
+     |               | Lookup EVPN/BGP   |                |          |           |
+     |               | for IP            |                |          |           |
+     |               +------------------>+                |          |           |
+     |               | IP FOUND, MAC<>IP |                |          |           |
+     |               <-------------------+                |          |           |
+     |               |                   |                |          |           |
+     |               |           unicast NS DAD to MAC    |          |           |
+     |               +----------------------------------------------> ---------> |
+     |               |                   |                |          |    NA     |
+     |               |                   |                | allowed  |<--------- |
+     |               |<----------------------------------------------|           |
+     |        Entry in NO_BIND state     |                |          |           |
+     |               |                   |                |          |           |
+     | NA, target=IP |                   |                |          |           |
+     |-------------->|                   |                |          |           |
+     |        Traffic from src/target IP |                |          |           |
+     |        is DROPPED and not visible |                |          |           |
+     |        to EVPN/BGP                |                |          |           |
  
      ]]></artwork>
 </figure>
