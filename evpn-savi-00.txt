@@ -5,8 +5,8 @@
 6MAN                                                    E. Levy-Abegnoli
 Internet-Draft                                                P. Thubert
 Intended status: Informational                               R. Kovacina
-Expires: 7 January 2024                                    Cisco Systems
-                                                             6 July 2023
+Expires: 8 January 2024                                    Cisco Systems
+                                                             7 July 2023
 
 
                         SAVI in an eVPN network
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 7 January 2024.
+   This Internet-Draft will expire on 8 January 2024.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 1]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 1]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 2]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 2]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -165,7 +165,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 3]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 3]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -221,7 +221,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 4]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 4]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -277,7 +277,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 5]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 5]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -333,7 +333,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 6]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 6]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -389,7 +389,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 7]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 7]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -445,7 +445,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 8]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 8]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -501,7 +501,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                 [Page 9]
+Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 9]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -511,31 +511,33 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
    This would be an example of host mobility use case.
 
-                                 local VTEP                                  remote VTEP
-                 + - - - - -  - - - - - - - - - - - - - +        +- - - - - -- - - - - - - - - - +
- +--------+      | +---------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
- |        |      | | local   |              |         | |        |  |         |    |           | |    |         |
- | Client |      | | SAVI    |<----API----->|  EVPN   | |        |  |   EVPN  |    | SAVI      | |    | Client  |
- +--------+      | +---------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
-     |           + - - | - -  - - - - - - - - - | - - - +        +- - | - - - -- - - - -| - - - -+         |
-     |     src=IP      |                        |                     |              IP in VALID           |
-     +---------------->+                        |                     |              state                 |
-     |                 |                        |                     |                 |                  |
-     |                 | Lookup EVPN/BGP for IP |                     |                 |                  |
-     |                 +----------------------->+                     |                 |                  |
-     |                 | IP FOUND, MAC <> IP    |                     |                 |                  |
-     |                 <------------------------+                     |                 |                  |
-     |                 |                        |                     |                 |                  |
-     |                 |                unicast NS DAD to MAC         |                 |                  |
-     |                 +----------------------------------------------------------------> --------->       |
-     |                 |                        |                     |                 |                  |
-     |                 |No response             |                     |                 |No response       |
-     |                 |entry moved to VALID    |                     |                 |
-     |                 +                        |                     |                 |
-     |            NA is allowed to reach EVPN   |                     |                 |
-     +----------------------------------------->+--------------------------------------->
-     +                                          |  IP learned in BGP  |               IP in NO_BIND
-                                                +-------------------->+               state
+                               local VTEP                    remote VTEP
+               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - +
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
+ |        |    | | local   |         |         | |    | |       | |     | |   |      |
+ | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
+     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
+     |   src=IP      |                   |                |      IP in VALID     |
+     +-------------->+                   |                |      state           |
+     |               |                   |                |          |           |
+     |               | Lookup EVPN/BGP   |                |          |           |
+     |               | for IP            |                |          |           |
+     |               +------------------>+                |          |           |
+     |               | IP FOUND, MAC<>IP |                |          |           |
+     |               <-------------------+                |          |           |
+     |               |                   |                |          |           |
+     |               |           unicast NS DAD to MAC    |          |           |
+     |               +----------------------------------------------> ---------> |
+     |               |                   |                |          |           |
+     |               |No response        |                |          |No response|
+     |               |entry moved to VALID                |          |
+     |               +                   |                |          |
+     |     NA is allowed to reach EVPN   |                |          |
+     +---------------------------------->+-------------------------->
+     +                                   | IP learned in  |   IP in NO_BIND
+     |                                   | BGP            |   state
+                                         +--------------->
 
               Figure 4: Remote not responding - Mobility
 
@@ -555,40 +557,39 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-
-
-Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 10]
+Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 10]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
 
-                                       local VTEP                                  remote VTEP
-                      +- - - - - - - - - - - - - - - - - - - - +        +- - - - - -- - - - - - - - - - +
-   +---------+        |  +----------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
-   |         |        |  | local    |              |         | |        |  |         |    |           | |    |         |
-   | Client  |        |  | SAVI     |<----API----->|  EVPN   | |        |  |   EVPN  |    | SAVI      | |    | Client  |
-   +---------+        |  +----------+              +---------+ |        |  +---------+    +-----------+ |    +---------+
-       |              +- - - | - - - - - - - - - - - - | - - - +        +- - | - - - -- - - - -| - - - -+         |
-       |        src=IP       |                         |                     |             IP in VALID            |
-       +-------------------->+                         |                     |             state                  |
-       |                     |                         |                     |                 |                  |
-       |                     | Lookup EVPN/BGP for IP  |                     |                 |                  |
-       |                     +------------------------>+                     |                 |                  |
-       |                     | IP FOUND, MAC <> IP     |                     |                 |                  |
-       |                     <-------------------------+                     |                 |                  |
-       |                     |                         |                     |                 |                  |
-       |                     |                 unicast NS DAD to MAC         |                 |                  |
-       |                     +-----------------------------------------------------------------> ---------------->|
-       |                     |                         |                     |                 |          NA      |
-       |                     |                         |                     |                 | <----------------|
-       |                     |                         |                     |    NA    allowed|                  |
-       |                     +<----------------------------------------------------------------|                  |
-       |                     |                         |                     |                 |                  |
-       |                     | Entry in NO_BIND state  |                     |                 |                  |
-       |                     | traffic from that src IP|                     |                 |                  |
-       |         NA          | is DROPPED and not      |                     |                 |                  |
-       +-------------------->+ visible to EVPN/BGP     |                     |                 |                  |
-       |                     |                         |                     |                 |                  |
+                               local VTEP                    remote VTEP
+               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - +
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
+ |        |    | | local   |         |         | |    | |       | |     | |   |      |
+ | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
+ +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
+     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
+     |   src=IP      |                   |                |      IP in VALID     |
+     +-------------->+                   |                |      state           |
+     |               |                   |                |          |           |
+     |               | Lookup EVPN/BGP   |                |          |           |
+     |               | for IP            |                |          |           |
+     |               +------------------>+                |          |           |
+     |               | IP FOUND, MAC<>IP |                |          |           |
+     |               <-------------------+                |          |           |
+     |               |                   |                |          |           |
+     |               |           unicast NS DAD to MAC    |          |           |
+     |               +----------------------------------------------> ---------> |
+     |               |                   |                |          |    NA     |
+     |               |                   |                | allowed  |<--------- |
+     |               |<----------------------------------------------|           |
+     |        Entry in NO_BIND state     |                |          |           |
+     |               |                   |                |          |           |
+     | NA, target=IP |                   |                |          |           |
+     |-------------->|                   |                |          |           |
+     |        Traffic from src/target IP |                |          |           |
+     |        is DROPPED and not visible |                |          |           |
+     |        to EVPN/BGP                |                |          |           |
 
 
                   Figure 5: Remote active - IP theft
@@ -612,8 +613,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-
-Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 11]
+Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 11]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -669,7 +669,7 @@ Authors' Addresses
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 12]
+Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 12]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
 
@@ -725,4 +725,4 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 
 
-Levy-Abegnoli, et al.    Expires 7 January 2024                [Page 13]
+Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 13]
