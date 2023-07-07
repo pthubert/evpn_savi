@@ -89,7 +89,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <t>
     SAVI specification <xref target="RFC6620"/> describes a mechanism that provides Source Address Validation (Improvements)
     for IPv6 networks based the First Come First Serve principle, applicable to any type of IPv6 addresses, including those
-    assigned through SLAAC.
+    assigned through IPv6 Neighbor Discovery (ND) <xref target="RFC4861"/> Stateless Address Autoconfiguration (SLAAC) <xref target="RFC4862"/> .
     According to the specification,  an IPv6 entry freshly snooped on a SAVI device need to reach the “VALID “ state before traffic
     sourced with it can be forwarded.
   </t>

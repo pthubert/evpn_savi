@@ -95,16 +95,16 @@ Table of Contents
    SAVI specification [RFC6620] describes a mechanism that provides
    Source Address Validation (Improvements) for IPv6 networks based the
    First Come First Serve principle, applicable to any type of IPv6
-   addresses, including those assigned through SLAAC.  According to the
-   specification, an IPv6 entry freshly snooped on a SAVI device need to
-   reach the "VALID " state before traffic sourced with it can be
-   forwarded.
+   addresses, including those assigned through IPv6 Neighbor Discovery
+   (ND) [RFC4861] Stateless Address Autoconfiguration (SLAAC) [RFC4862]
+   .  According to the specification, an IPv6 entry freshly snooped on a
+   SAVI device need to reach the "VALID " state before traffic sourced
+   with it can be forwarded.
 
    SAVI specification [RFC7513] describes a similar mechanism for
    addresses assigned by DHCPv6/DHCPv4 server.  Again, traffic sourced
    which such addresses can only be forwarded when the address state is
    "BOUND".
-
 
 
 
@@ -655,9 +655,9 @@ Authors' Addresses
 
    Eric Levy-Abegnoli
    Cisco Systems, Inc
-   Building D
-   45 Allee des Ormes - BP1200
-   06254 Mougins - Sophia Antipolis
+   Emerald Square, Batiment C
+   rue Evariste Galois
+   06410 BIOT - Sophia Antipolis
    France
 
    Phone: +33 497 23 26 20
@@ -676,9 +676,9 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
    Pascal Thubert
    Cisco Systems, Inc
-   Building D
-   45 Allee des Ormes - BP1200
-   06254 Mougins - Sophia Antipolis
+   Emerald Square, Batiment C
+   rue Evariste Galois
+   06410 BIOT - Sophia Antipolis
    France
 
    Phone: +33 497 23 26 34
