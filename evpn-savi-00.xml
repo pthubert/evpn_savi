@@ -145,32 +145,32 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
     with zero), which are not used by EVPN proxy for learning. Therefore, as long as an address is not validated by SAVI, it remains
     unknown by EVPN.
   </t>
+
   <figure anchor='model1'><name>Deployment model 1</name>
   <artwork><![CDATA[
                              protection perimeter
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - -+
-           |                                                     |
-           |                  trusted perimeter                  |
-           |            +- - - - - - - - - - - - - -+            |
-           |            |                           |            |
-           |            |         L3 NETWORK        |            |
-           |            |  VTEP                VTEP |            |
-+--------+ | +------+  ++------+             +------++  +------+ | +--------+
-|        | | | SAVI |  |       |             |       |  | SAVI | | |        |
-| HOST/CE| | |      |  |EVPN/PE|             |EVPN/PE|  |      | | | HOST/CE|
-|        | | |device|  |       |             |       |  |device| | |        |
-+--------+ | +------+  ++------+             +------++  +------+ | +--------+
-           |            |                           |            |
-           |            |                           |            |
-           |            |                           |            |
-           |            |                           |            |
-           |            +- - - - - - - - - - - - - -+            |
-           |                                                     |
-           |                                                     |
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - -+
+          +- - - - - - - - - - - - - - - - - - - - - - -+
+          |                                             |
+          |                trusted perimeter            |
+          |            +- - - - - - - - - -+            |
+          |            |                   |            |
+          |            |    L3 NETWORK     |            |
+          |            |  VTEP        VTEP |            |
++-------+ | +------+  ++------+     +------++  +------+ | +-------+
+|       | | | SAVI |  |       |     |       |  | SAVI | | |       |
+|HOST/CE| | |      |  |EVPN/PE|     |EVPN/PE|  |      | | |HOST/CE|
+|       | | |device|  |       |     |       |  |device| | |       |
++-------+ | +------+  ++------+     +------++  +------+ | +-------+
+          |            |                   |            |
+          |            |                   |            |
+          |            |                   |            |
+          |            |                   |            |
+          |            +- - - - - - - - - -+            |
+          |                                             |
+          |                                             |
+          +- - - - - - - - - - - - - - - - - - - - - - -+
  
 ]]></artwork>
-
   </figure>
 
   <t>
@@ -188,28 +188,28 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <figure anchor='model2'><name>Deployment model 2</name>
   <artwork><![CDATA[
 
-                               protection perimeter
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
-           |                                                          |
-           |                    trusted perimeter                     |
-           |              +- - - - - - - - - - - - - -+               |
-           |              |                           |               |
-           |              |         L3 NETWORK        |               |
-           |     VTEP/PE  |                           | VTEP/PE       |
-+--------+ | +----------+-+------+             +------+-+----------+  | +--------+
-|        | | | SAVI     |        |             |        |   SAVI   |  | |        |
-| HOST/CE| | |         API  EVPN |             | EVPN  API         |  | | HOST/CE|
-|        | | | instance |        |             |        | instance |  | |        |
-+--------+ | +----------+-+------+             +------+-+----------+  | +--------+
-           |              |                           |               |
-           |              |                           |               |
-           |              |                           |               |
-           |              |                           |               |
-           |              +- - - - - - - - - - - - - -+               |
-           |                                                          |
-           |                                                          |
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
-                              protection perimeter
+                             protection perimeter
+          +- - - - - - - -  - - - -  - - - - - -- - -- - +
+          |                                              |
+          |                trusted perimeter             |
+          |            +- - - -- - - - - - -+            |
+          |            |                    |            |
+          |            |    L3 NETWORK      |            |
+          |   VTEP/PE  |                    | VTEP/PE    |
++-------+ | +--------+-+------+      +------+-+--------+ | +-------+
+|       | | |SAVI    |        |      |        | SAVI   | | |       |
+|HOST/CE| | |       API  EVPN |      | EVPN  API       | | |HOST/CE|
+|       | | |instance|        |      |        |instance| | |       |
++-------+ | +--------+-+------+      +------+-+--------+ | +-------+
+          |            |                    |            |
+          |            |                    |            |
+          |            |                    |            |
+          |            |                    |            |
+          |            +- - - - ---- - - - -+            |
+          |                                              |
+          |                                              |
+          +- - - - - - - - - - - -   - - - - - - - - - - +
+                             protection perimeter
  
  
 	   ]]></artwork>
@@ -297,40 +297,40 @@ Sequence goes like this for A:
   
 <figure anchor='fcfs_savi'><name>FCFS-SAVI</name>
 <artwork><![CDATA[
-                                 layer3 network
-                               +------------------+
-                  VTEP         |                  |      VTEP
-+--------+      +--------+-----+--+             +-+------+--------+       +--------+
-|        |      |        |        |             |        |        |       |        |
-| HOST   |      |  SAVI  |   EVPN |             | EVPN   |  SAVI  |       | HOST   |
-|        |      |        |        |             |        |        |       |        |
-+----+---+      +----+---+---+-+--+             +-+--+---+---+----+       +----+---+
-     |               |       | |                  |  |       |                 |
-     |               |       | +------------------+  |       |                 |
-     |(1)data, src=S |       |                       |      S in VALID         |
-     +-------------->|       |                       |      state              |
-     |               |       |                       |       |                 |
-     |          S: TENTATIVE |                       |       |                 |
-     |               |       |(2)DAD NS, target=S    |       |                 |
-     |       +-      +-------+-----------------------+------>|(3)DAD NS        |
-     |       |       |       |                       |       +---------------->|
-     |       |     timeout   |                       |       |                 |
-     |       |       |       |                       |       |                 |
-     |   A   |       |       |                       |       |                 |
-     |       |  S: VALID     |                       |       |                 |
-     |       |       |       |                       |       |                 |
-     |       |       |       |                       |       |                 |
-     |       +-      |       |                       |       |                 |
-     |               |       |(2)DAD NS, target=S    |       |                 |
-     |       +-      +-------+-----------------------+------>|(3)DAD NS        |
-     |       |       |       |                       |       +---------------->|
-     |       |       |       |(4)NA to all_nodes(4)  |       |                 |
-     |   B   |       |<------+-----------------------+-------+-----------------+
-     |       |       |       |                       |       |                 |
-     |       |  S: NO_BIND   |                       |       |                 |
-     |       +-      |       |                       |       |                 |
-     |               |       |                       |       |                 |
-     |               |       |                       |       |                 |
+                               layer3 network
+                             +-----------+
+                VTEP         |           |      VTEP
++------+      +--------+-----+--+      +-+------+--------+  +-------+
+|      |      |        |        |      |        |        |  |       |
+| HOST |      |  SAVI  |   EVPN |      | EVPN   |  SAVI  |  |HOST   |
+|      |      |        |        |      |        |        |  |       |
++----+-+      +----+---+---+-+--+      +-+--+---+---+----+  +---+---+
+     |             |       | |           |  |       |           |
+     |             |       | +-----------+  |       |           |
+    (1)data, src=S |       |                |      S in VALID   |
+     +------------>|       |                |      state        |
+     |             |       |                |       |           |
+     |        S: TENTATIVE |                |       |           |
+     |             |       |(2)DAD NS, target=S     |           |
+     |     +-      +-------+---------------+------->|(3)DAD NS  |
+     |     |       |       |               |        +---------->|
+     |     |     timeout   |               |        |           |
+     |     |       |       |               |        |           |
+     | A   |       |       |               |        |           |
+     |     |  S: VALID     |               |        |           |
+     |     |       |       |               |        |           |
+     |     |       |       |               |        |           |
+     |     +-      |       |               |        |           |
+     |             |       |(2)DAD NS, target=S     |           |
+     |     +-      +-------+---------------+------->|(3)DAD NS  |
+     |     |       |       |               |        +---------->|
+     |     |       |       |(4)NA to all_nodes(4)   |           |
+     | B   |       |<------+---------------+--------+-----------+
+     |     |       |       |               |        |           |
+     |     |  S: NO_BIND   |               |        |           |
+     |     +-      |       |               |        |           |
+     |             |       |               |        |           |
+     |             |       |               |        |           |
  
      ]]></artwork>
 </figure>
@@ -396,33 +396,34 @@ This would be an example of host mobility use case.
 </t>
 <figure anchor='mobility'><name>Remote not responding - Mobility</name>
 <artwork><![CDATA[
-                               local VTEP                    remote VTEP
-               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - + 
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+     
- |        |    | | local   |         |         | |    | |       | |     | |   |      |
- | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
-     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
-     |   src=IP      |                   |                |      IP in VALID     |
-     +-------------->+                   |                |      state           |
-     |               |                   |                |          |           |
-     |               | Lookup EVPN/BGP   |                |          |           |
-     |               | for IP            |                |          |           |
-     |               +------------------>+                |          |           |
-     |               | IP FOUND, MAC<>IP |                |          |           |
-     |               <-------------------+                |          |           |
-     |               |                   |                |          |           |
-     |               |           unicast NS DAD to MAC    |          |           |
-     |               +----------------------------------------------> ---------> |
-     |               |                   |                |          |           |
-     |               |No response        |                |          |No response|
-     |               |entry moved to VALID                |          |
-     |               +                   |                |          |
-     |     NA is allowed to reach EVPN   |                |          |
-     +---------------------------------->+--------------------------> 
-     +                                   | IP learned in  |   IP in NO_BIND
-     |                                   | BGP            |   state 
-                                         +---------------> 
+
+                     local VTEP                  remote VTEP
+         + - - - - -  - -  - - - - - - +  +--- - - - - - - +
++------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+     
+|      | | | local   |     |         | |  | |     | |    | | |      |
+|Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
++------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
+   |     + - - | - - - - - - -  |  - - +  +--- - --- - | --+    |
+   |  src=IP   |                |             |    IP in VALID  |
+   +---------->+                |             |    state        |
+   |           |                |             |        |        |
+   |           | Lookup EVPN/BGP|             |        |        |
+   |           | for IP         |             |        |        |
+   |           +--------------->+             |        |        |
+   |           | IP FOUND, MAC<>IP            |        |        |
+   |           <----------------+             |        |        |
+   |           |                |             |        |        |
+   |           |        unicast NS DAD to MAC |        |        |
+   |           +--------------------------------------> ------->|
+   |           |                |             |        |        |
+   |           |No response     |             |      No response
+   |           |entry moved to VALID          |        |
+   |           +                |             |        |
+   | NA is allowed to reach EVPN|             |        |
+   +--------------------------->+---------------------> 
+   +                            | IP learned  |   IP in NO_BIND
+   |                            | in BGP      |   state 
+                                +-------------> 
     ]]></artwork>
 </figure>
 </section><!--"Address found in BGP/EVPN table, remote not active"-->
@@ -440,36 +441,37 @@ This would be an example of host mobility use case.
 </t>
 <figure anchor='theft'><name>Remote active - IP theft</name>
 <artwork><![CDATA[
-                               local VTEP                    remote VTEP
-               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - + 
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+     
- |        |    | | local   |         |         | |    | |       | |     | |   |      |
- | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
-     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
-     |   src=IP      |                   |                |      IP in VALID     |
-     +-------------->+                   |                |      state           |
-     |               |                   |                |          |           |
-     |               | Lookup EVPN/BGP   |                |          |           |
-     |               | for IP            |                |          |           |
-     |               +------------------>+                |          |           |
-     |               | IP FOUND, MAC<>IP |                |          |           |
-     |               <-------------------+                |          |           |
-     |               |                   |                |          |           |
-     |               |           unicast NS DAD to MAC    |          |           |
-     |               +----------------------------------------------> ---------> |
-     |               |                   |                |          |    NA     |
-     |               |                   |                | allowed  |<--------- |
-     |               |<----------------------------------------------|           |
-     |        Entry in NO_BIND state     |                |          |           |
-     |               |                   |                |          |           |
-     | NA, target=IP |                   |                |          |           |
-     |-------------->|                   |                |          |           |
-     |        Traffic from src/target IP |                |          |           |
-     |        is DROPPED and not visible |                |          |           |
-     |        to EVPN/BGP                |                |          |           |
- 
-     ]]></artwork>
+
+                    local VTEP                  remote VTEP
+         + - - - - -  - -  - - - - - - +  +--- - - - - - - +
++------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+     
+|      | | | local   |     |         | |  | |     | |    | | |      |
+|Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
++------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
+   |     + - - | - - - - - - -  |  - - +  +--- - --- - |  -+    |
+   |  src=IP   |                |             |    IP in VALID  |
+   +---------->+                |             |    state        |
+   |           |                |             |        |        |
+   |           | Lookup EVPN/BGP|             |        |        |
+   |           | for IP         |             |        |        |
+   |           +--------------->+             |        |        |
+   |           | IP FOUND, MAC<>IP            |        |        |
+   |           <----------------+             |        |        |
+   |           |                |             |        |        |
+   |           |        unicast NS DAD to MAC |        |        |
+   |           +--------------------------------------> ------> |
+   |           |                |             |        |    NA  |
+   |           |                |             | allowed|<-------|
+   |           |<--------------------------------------|        |
+   |  Entry in NO_BIND state    |             |        |        |
+   |           |                |             |        |        |
+   | NA, target=IP              |             |        |        |
+   |---------->|                |             |        |        |
+   |  Traffic from src/target IP|             |        |        |
+   |  is DROPPED and not visible|             |        |        |
+   |   to EVPN/BGP              |             |        |        |
+  
+]]></artwork>
 </figure>
 </section><!--"Address found in BGP/EVPN table, remote active"-->
 

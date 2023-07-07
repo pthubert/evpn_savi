@@ -180,29 +180,29 @@ Internet-Draft           SAVI in an eVPN network               July 2023
    are not used by EVPN proxy for learning.  Therefore, as long as an
    address is not validated by SAVI, it remains unknown by EVPN.
 
-                             protection perimeter
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - -+
-           |                                                     |
-           |                  trusted perimeter                  |
-           |            +- - - - - - - - - - - - - -+            |
-           |            |                           |            |
-           |            |         L3 NETWORK        |            |
-           |            |  VTEP                VTEP |            |
-+--------+ | +------+  ++------+             +------++  +------+ | +--------+
-|        | | | SAVI |  |       |             |       |  | SAVI | | |        |
-| HOST/CE| | |      |  |EVPN/PE|             |EVPN/PE|  |      | | | HOST/CE|
-|        | | |device|  |       |             |       |  |device| | |        |
-+--------+ | +------+  ++------+             +------++  +------+ | +--------+
-           |            |                           |            |
-           |            |                           |            |
-           |            |                           |            |
-           |            |                           |            |
-           |            +- - - - - - - - - - - - - -+            |
-           |                                                     |
-           |                                                     |
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - -+
+                                protection perimeter
+             +- - - - - - - - - - - - - - - - - - - - - - -+
+             |                                             |
+             |                trusted perimeter            |
+             |            +- - - - - - - - - -+            |
+             |            |                   |            |
+             |            |    L3 NETWORK     |            |
+             |            |  VTEP        VTEP |            |
+   +-------+ | +------+  ++------+     +------++  +------+ | +-------+
+   |       | | | SAVI |  |       |     |       |  | SAVI | | |       |
+   |HOST/CE| | |      |  |EVPN/PE|     |EVPN/PE|  |      | | |HOST/CE|
+   |       | | |device|  |       |     |       |  |device| | |       |
+   +-------+ | +------+  ++------+     +------++  +------+ | +-------+
+             |            |                   |            |
+             |            |                   |            |
+             |            |                   |            |
+             |            |                   |            |
+             |            +- - - - - - - - - -+            |
+             |                                             |
+             |                                             |
+             +- - - - - - - - - - - - - - - - - - - - - - -+
 
-                     Figure 1: Deployment model 1
+                        Figure 1: Deployment model 1
 
    In model 2, the SAVI device and the PE/VTEP are colapsed into the
    same box.  SAVI device is referenced as a "SAVI instance".  This
@@ -226,32 +226,32 @@ Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 4]
 Internet-Draft           SAVI in an eVPN network               July 2023
 
 
-                               protection perimeter
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
-           |                                                          |
-           |                    trusted perimeter                     |
-           |              +- - - - - - - - - - - - - -+               |
-           |              |                           |               |
-           |              |         L3 NETWORK        |               |
-           |     VTEP/PE  |                           | VTEP/PE       |
-+--------+ | +----------+-+------+             +------+-+----------+  | +--------+
-|        | | | SAVI     |        |             |        |   SAVI   |  | |        |
-| HOST/CE| | |         API  EVPN |             | EVPN  API         |  | | HOST/CE|
-|        | | | instance |        |             |        | instance |  | |        |
-+--------+ | +----------+-+------+             +------+-+----------+  | +--------+
-           |              |                           |               |
-           |              |                           |               |
-           |              |                           |               |
-           |              |                           |               |
-           |              +- - - - - - - - - - - - - -+               |
-           |                                                          |
-           |                                                          |
-           +- - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
-                              protection perimeter
+                                protection perimeter
+             +- - - - - - - -  - - - -  - - - - - -- - -- - +
+             |                                              |
+             |                trusted perimeter             |
+             |            +- - - -- - - - - - -+            |
+             |            |                    |            |
+             |            |    L3 NETWORK      |            |
+             |   VTEP/PE  |                    | VTEP/PE    |
+   +-------+ | +--------+-+------+      +------+-+--------+ | +-------+
+   |       | | |SAVI    |        |      |        | SAVI   | | |       |
+   |HOST/CE| | |       API  EVPN |      | EVPN  API       | | |HOST/CE|
+   |       | | |instance|        |      |        |instance| | |       |
+   +-------+ | +--------+-+------+      +------+-+--------+ | +-------+
+             |            |                    |            |
+             |            |                    |            |
+             |            |                    |            |
+             |            |                    |            |
+             |            +- - - - ---- - - - -+            |
+             |                                              |
+             |                                              |
+             +- - - - - - - - - - - -   - - - - - - - - - - +
+                                protection perimeter
 
 
 
-                     Figure 2: Deployment model 2
+                        Figure 2: Deployment model 2
 
    In this model however, it is possible and even desirable to leverage
    the knowledge of remote IP entries stored in the VTEP BGP tables to
@@ -394,43 +394,43 @@ Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 7]
 Internet-Draft           SAVI in an eVPN network               July 2023
 
 
-                                 layer3 network
-                               +------------------+
-                  VTEP         |                  |      VTEP
-+--------+      +--------+-----+--+             +-+------+--------+       +--------+
-|        |      |        |        |             |        |        |       |        |
-| HOST   |      |  SAVI  |   EVPN |             | EVPN   |  SAVI  |       | HOST   |
-|        |      |        |        |             |        |        |       |        |
-+----+---+      +----+---+---+-+--+             +-+--+---+---+----+       +----+---+
-     |               |       | |                  |  |       |                 |
-     |               |       | +------------------+  |       |                 |
-     |(1)data, src=S |       |                       |      S in VALID         |
-     +-------------->|       |                       |      state              |
-     |               |       |                       |       |                 |
-     |          S: TENTATIVE |                       |       |                 |
-     |               |       |(2)DAD NS, target=S    |       |                 |
-     |       +-      +-------+-----------------------+------>|(3)DAD NS        |
-     |       |       |       |                       |       +---------------->|
-     |       |     timeout   |                       |       |                 |
-     |       |       |       |                       |       |                 |
-     |   A   |       |       |                       |       |                 |
-     |       |  S: VALID     |                       |       |                 |
-     |       |       |       |                       |       |                 |
-     |       |       |       |                       |       |                 |
-     |       +-      |       |                       |       |                 |
-     |               |       |(2)DAD NS, target=S    |       |                 |
-     |       +-      +-------+-----------------------+------>|(3)DAD NS        |
-     |       |       |       |                       |       +---------------->|
-     |       |       |       |(4)NA to all_nodes(4)  |       |                 |
-     |   B   |       |<------+-----------------------+-------+-----------------+
-     |       |       |       |                       |       |                 |
-     |       |  S: NO_BIND   |                       |       |                 |
-     |       +-      |       |                       |       |                 |
-     |               |       |                       |       |                 |
-     |               |       |                       |       |                 |
+                                  layer3 network
+                                +-----------+
+                   VTEP         |           |      VTEP
+   +------+      +--------+-----+--+      +-+------+--------+  +-------+
+   |      |      |        |        |      |        |        |  |       |
+   | HOST |      |  SAVI  |   EVPN |      | EVPN   |  SAVI  |  |HOST   |
+   |      |      |        |        |      |        |        |  |       |
+   +----+-+      +----+---+---+-+--+      +-+--+---+---+----+  +---+---+
+        |             |       | |           |  |       |           |
+        |             |       | +-----------+  |       |           |
+       (1)data, src=S |       |                |      S in VALID   |
+        +------------>|       |                |      state        |
+        |             |       |                |       |           |
+        |        S: TENTATIVE |                |       |           |
+        |             |       |(2)DAD NS, target=S     |           |
+        |     +-      +-------+---------------+------->|(3)DAD NS  |
+        |     |       |       |               |        +---------->|
+        |     |     timeout   |               |        |           |
+        |     |       |       |               |        |           |
+        | A   |       |       |               |        |           |
+        |     |  S: VALID     |               |        |           |
+        |     |       |       |               |        |           |
+        |     |       |       |               |        |           |
+        |     +-      |       |               |        |           |
+        |             |       |(2)DAD NS, target=S     |           |
+        |     +-      +-------+---------------+------->|(3)DAD NS  |
+        |     |       |       |               |        +---------->|
+        |     |       |       |(4)NA to all_nodes(4)   |           |
+        | B   |       |<------+---------------+--------+-----------+
+        |     |       |       |               |        |           |
+        |     |  S: NO_BIND   |               |        |           |
+        |     +-      |       |               |        |           |
+        |             |       |               |        |           |
+        |             |       |               |        |           |
 
 
-                         Figure 3: FCFS-SAVI
+                            Figure 3: FCFS-SAVI
 
 6.  Enhanced SAVI/EVPN interactions
 
@@ -511,35 +511,35 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
    This would be an example of host mobility use case.
 
-                               local VTEP                    remote VTEP
-               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - +
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
- |        |    | | local   |         |         | |    | |       | |     | |   |      |
- | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
-     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
-     |   src=IP      |                   |                |      IP in VALID     |
-     +-------------->+                   |                |      state           |
-     |               |                   |                |          |           |
-     |               | Lookup EVPN/BGP   |                |          |           |
-     |               | for IP            |                |          |           |
-     |               +------------------>+                |          |           |
-     |               | IP FOUND, MAC<>IP |                |          |           |
-     |               <-------------------+                |          |           |
-     |               |                   |                |          |           |
-     |               |           unicast NS DAD to MAC    |          |           |
-     |               +----------------------------------------------> ---------> |
-     |               |                   |                |          |           |
-     |               |No response        |                |          |No response|
-     |               |entry moved to VALID                |          |
-     |               +                   |                |          |
-     |     NA is allowed to reach EVPN   |                |          |
-     +---------------------------------->+-------------------------->
-     +                                   | IP learned in  |   IP in NO_BIND
-     |                                   | BGP            |   state
-                                         +--------------->
+                        local VTEP                  remote VTEP
+            + - - - - -  - -  - - - - - - +  +--- - - - - - - +
+   +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
+   |      | | | local   |     |         | |  | |     | |    | | |      |
+   |Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
+   +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
+      |     + - - | - - - - - - -  |  - - +  +--- - --- - | --+    |
+      |  src=IP   |                |             |    IP in VALID  |
+      +---------->+                |             |    state        |
+      |           |                |             |        |        |
+      |           | Lookup EVPN/BGP|             |        |        |
+      |           | for IP         |             |        |        |
+      |           +--------------->+             |        |        |
+      |           | IP FOUND, MAC<>IP            |        |        |
+      |           <----------------+             |        |        |
+      |           |                |             |        |        |
+      |           |        unicast NS DAD to MAC |        |        |
+      |           +--------------------------------------> ------->|
+      |           |                |             |        |        |
+      |           |No response     |             |      No response
+      |           |entry moved to VALID          |        |
+      |           +                |             |        |
+      | NA is allowed to reach EVPN|             |        |
+      +--------------------------->+--------------------->
+      +                            | IP learned  |   IP in NO_BIND
+      |                            | in BGP      |   state
+                                   +------------->
 
-              Figure 4: Remote not responding - Mobility
+                 Figure 4: Remote not responding - Mobility
 
 6.3.  Address found in BGP/EVPN table, remote active
 
@@ -562,37 +562,36 @@ Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 10]
 Internet-Draft           SAVI in an eVPN network               July 2023
 
 
-                               local VTEP                    remote VTEP
-               + - - - - -  -  - - - - - - - - - +    +-- - - -- - -- - - +
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
- |        |    | | local   |         |         | |    | |       | |     | |   |      |
- | Client |    | | SAVI    |<--API-->|  EVPN   | |    | | EVPN  | | SAVI| |   |Client|
- +--------+    | +---------+         +---------+ |    | +-------+ +-----+ |   +------+
-     |         + - - | - -  - -  - - - - | - - - +    +-- - - - -- - | - -+      |
-     |   src=IP      |                   |                |      IP in VALID     |
-     +-------------->+                   |                |      state           |
-     |               |                   |                |          |           |
-     |               | Lookup EVPN/BGP   |                |          |           |
-     |               | for IP            |                |          |           |
-     |               +------------------>+                |          |           |
-     |               | IP FOUND, MAC<>IP |                |          |           |
-     |               <-------------------+                |          |           |
-     |               |                   |                |          |           |
-     |               |           unicast NS DAD to MAC    |          |           |
-     |               +----------------------------------------------> ---------> |
-     |               |                   |                |          |    NA     |
-     |               |                   |                | allowed  |<--------- |
-     |               |<----------------------------------------------|           |
-     |        Entry in NO_BIND state     |                |          |           |
-     |               |                   |                |          |           |
-     | NA, target=IP |                   |                |          |           |
-     |-------------->|                   |                |          |           |
-     |        Traffic from src/target IP |                |          |           |
-     |        is DROPPED and not visible |                |          |           |
-     |        to EVPN/BGP                |                |          |           |
+                       local VTEP                  remote VTEP
+            + - - - - -  - -  - - - - - - +  +--- - - - - - - +
+   +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
+   |      | | | local   |     |         | |  | |     | |    | | |      |
+   |Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
+   +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
+      |     + - - | - - - - - - -  |  - - +  +--- - --- - |  -+    |
+      |  src=IP   |                |             |    IP in VALID  |
+      +---------->+                |             |    state        |
+      |           |                |             |        |        |
+      |           | Lookup EVPN/BGP|             |        |        |
+      |           | for IP         |             |        |        |
+      |           +--------------->+             |        |        |
+      |           | IP FOUND, MAC<>IP            |        |        |
+      |           <----------------+             |        |        |
+      |           |                |             |        |        |
+      |           |        unicast NS DAD to MAC |        |        |
+      |           +--------------------------------------> ------> |
+      |           |                |             |        |    NA  |
+      |           |                |             | allowed|<-------|
+      |           |<--------------------------------------|        |
+      |  Entry in NO_BIND state    |             |        |        |
+      |           |                |             |        |        |
+      | NA, target=IP              |             |        |        |
+      |---------->|                |             |        |        |
+      |  Traffic from src/target IP|             |        |        |
+      |  is DROPPED and not visible|             |        |        |
+      |   to EVPN/BGP              |             |        |        |
 
-
-                  Figure 5: Remote active - IP theft
+                     Figure 5: Remote active - IP theft
 
 7.  Security Considerations
 
@@ -610,6 +609,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
               "Neighbor Discovery for IP version 6 (IPv6)", RFC 4861,
               DOI 10.17487/RFC4861, September 2007,
               <https://www.rfc-editor.org/info/rfc4861>.
+
 
 
 
