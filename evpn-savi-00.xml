@@ -22,12 +22,12 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
    <author initials='E' surname='Levy-Abegnoli' fullname='Eric Levy-Abegnoli'>
       <organization abbrev='Cisco Systems'>Cisco Systems, Inc</organization>
       <address>
-         <postal>
-            <street>Building D</street>
-            <street>45 Allee des Ormes - BP1200 </street>
-            <city>Mougins - Sophia Antipolis</city>
-            <code>06254</code>
-            <country>France</country>
+          <postal>
+            <street>Emerald Square, Batiment C</street>
+            <street>rue Evariste Galois </street>
+            <city>BIOT - Sophia Antipolis</city>
+            <code>06410</code>
+          <country>France</country>
          </postal>
          <phone>+33 497 23 26 20</phone>
          <email>elevyabe@cisco.com</email>
@@ -36,12 +36,12 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
    <author initials='P' surname='Thubert' fullname='Pascal Thubert'>
       <organization abbrev='Cisco Systems'>Cisco Systems, Inc</organization>
       <address>
-         <postal>
-            <street>Building D</street>
-            <street>45 Allee des Ormes - BP1200 </street>
-            <city>Mougins - Sophia Antipolis</city>
-            <code>06254</code>
-            <country>France</country>
+          <postal>
+            <street>Emerald Square, Batiment C</street>
+            <street>rue Evariste Galois </street>
+            <city>BIOT - Sophia Antipolis</city>
+            <code>06410</code>
+          <country>France</country>
          </postal>
          <phone>+33 497 23 26 34</phone>
          <email>pthubert@cisco.com</email>
@@ -112,7 +112,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <t> These two models are reviewed in <xref target='models'/>. Corresponding interactions between SAVI and eVPN are reviewed as
   well in this document.
   </t>
-  
+
 </section > <!--Introduction-->
 
 <section anchor='acronyms' > <name>Acronyms</name>
@@ -131,14 +131,14 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
     </dl>
 </section><!-- Acronyms -->
 
-<section anchor="models"> <name>Deployment models</name>  
+<section anchor="models"> <name>Deployment models</name>
   <t>
     In model 1, a SAVI device is inserted between client (host or CE) and PE (or VTEP). This first model is straight forward
-    and does not require any additional specification. It is presented in  <xref target='model1'/>. 
+    and does not require any additional specification. It is presented in  <xref target='model1'/>.
   </t>
 
   <t>
-    The SAVI devices operate as a verification perimeter between untrusted clients (CEs or Hosts) and PEs (or VTEPs). 
+    The SAVI devices operate as a verification perimeter between untrusted clients (CEs or Hosts) and PEs (or VTEPs).
     As specified in <xref target="RFC6620"/> and <xref target="RFC7513"/>, only validated addresses can inject traffic over the
     trusted perimeter. The mechanisms to validate addresses are specified in these two RFCs. As long as an address is not
     validated, the only messages allowed from the SAVI device towards the EVPN (VTEP) networks are IPv6 ND DAD messages (sourced
@@ -169,7 +169,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
           |                                             |
           |                                             |
           +- - - - - - - - - - - - - - - - - - - - - - -+
- 
+
 ]]></artwork>
   </figure>
 
@@ -177,7 +177,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
     In model 2, the SAVI device and the PE/VTEP are colapsed into the same box. SAVI device is referenced as a "SAVI instance".
     This model is presented in  <xref target='model2'/>.
   </t>
-    
+
   <t>
     Model2 is fundamentally the same as the model1. SAVI instance acts as a Security wall between untrusted clients and
     the VTEPs, and only allows validated sources to inject traffic beyond the VTEP. The injection happens over an API between
@@ -210,8 +210,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
           |                                              |
           +- - - - - - - - - - - -   - - - - - - - - - - +
                              protection perimeter
- 
- 
+
+
 	   ]]></artwork>
   </figure>
 <t>
@@ -233,7 +233,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   Both processes are described in detail in <xref target="RFC7513"/>.
 </t>
 <t>
-  During DHCP Snooping process and associated state machine, an IP entry freshly snooped on a SAVI device progresses from NO_BIND to BOUND. 
+  During DHCP Snooping process and associated state machine, an IP entry freshly snooped on a SAVI device progresses from NO_BIND to BOUND.
 </t>
   </section><!--DHCP SAVI background -->
 <section> <name> Interactions between RFC7513 and EVPN </name>
@@ -261,7 +261,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <section> <name> Interactions between SAVI-FCFS and EVPN </name>
 <t>
   Main interactions are listed below:
-</t>		
+</t>
 <ul>
   <li>Sources not validated by SAVI are not learnt nor distributed by EVPN: SAVI does not allow NA to be forwarded (model 1)
   or signaled (model 2) to EVPN.</li>
@@ -294,7 +294,7 @@ Sequence goes like this for A:
   Upon receiving the NA, the ingress SAVI instance move the entry to NO_BIND and does not allow traffic from this source to
   be forwarded.
 </t>
-  
+
 <figure anchor='fcfs_savi'><name>FCFS-SAVI</name>
 <artwork><![CDATA[
                                layer3 network
@@ -331,7 +331,7 @@ Sequence goes like this for A:
      |     +-      |       |               |        |           |
      |             |       |               |        |           |
      |             |       |               |        |           |
- 
+
      ]]></artwork>
 </figure>
 
@@ -392,14 +392,14 @@ Sequence goes like this for A:
   SAVI instance MAY signal the entry to EVPN as soon as it becomes VALID.
 </t>
 <t>
-This would be an example of host mobility use case.  
+This would be an example of host mobility use case.
 </t>
 <figure anchor='mobility'><name>Remote not responding - Mobility</name>
 <artwork><![CDATA[
 
                      local VTEP                  remote VTEP
          + - - - - -  - -  - - - - - - +  +--- - - - - - - +
-+------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+     
++------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
 |      | | | local   |     |         | |  | |     | |    | | |      |
 |Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
 +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
@@ -420,10 +420,10 @@ This would be an example of host mobility use case.
    |           |entry moved to VALID          |        |
    |           +                |             |        |
    | NA is allowed to reach EVPN|             |        |
-   +--------------------------->+---------------------> 
+   +--------------------------->+--------------------->
    +                            | IP learned  |   IP in NO_BIND
-   |                            | in BGP      |   state 
-                                +-------------> 
+   |                            | in BGP      |   state
+                                +------------->
     ]]></artwork>
 </figure>
 </section><!--"Address found in BGP/EVPN table, remote not active"-->
@@ -444,7 +444,7 @@ This would be an example of host mobility use case.
 
                     local VTEP                  remote VTEP
          + - - - - -  - -  - - - - - - +  +--- - - - - - - +
-+------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+     
++------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
 |      | | | local   |     |         | |  | |     | |    | | |      |
 |Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
 +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
@@ -470,7 +470,7 @@ This would be an example of host mobility use case.
    |  Traffic from src/target IP|             |        |        |
    |  is DROPPED and not visible|             |        |        |
    |   to EVPN/BGP              |             |        |        |
-  
+
 ]]></artwork>
 </figure>
 </section><!--"Address found in BGP/EVPN table, remote active"-->
