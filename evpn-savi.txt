@@ -10,7 +10,7 @@ Expires: 8 January 2024                                    Cisco Systems
 
 
                         SAVI in an eVPN network
-                 draft-ietf-levy-abegnoli-evpn-savi-00
+                  draft-levyabegnoli-bess-evpn-savi-00
 
 Abstract
 
@@ -98,7 +98,7 @@ Table of Contents
    addresses, including those assigned through IPv6 [RFC4291][RFC8200]
    Neighbor Discovery (ND) [RFC4861] Stateless Address Autoconfiguration
    (SLAAC) [RFC4862] .  According to the specification, an IPv6 entry
-   freshly snooped on a SAVI device need to reach the "VALID " state
+   freshly snooped on a SAVI device need to reach the "VALID" state
    before traffic sourced with it can be forwarded.
 
    SAVI specification [RFC7513] describes a similar mechanism for

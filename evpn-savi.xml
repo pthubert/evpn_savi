@@ -14,7 +14,7 @@
 <?rfc authorship="yes"?>
 <?rfc tocappendix="yes"?>
 <rfc  xmlns:xi="http://www.w3.org/2001/XInclude" category="info" ipr='trust200902' tocInclude="true"  obsoletes=""
-updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docName="draft-ietf-levy-abegnoli-evpn-savi-00" >
+updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docName="draft-levyabegnoli-bess-evpn-savi-00" >
 
 <front>
   <title abbrev="SAVI in an eVPN network">SAVI in an eVPN network</title>
