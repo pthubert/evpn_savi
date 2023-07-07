@@ -294,24 +294,24 @@ Internet-Draft           SAVI in an EVPN network               July 2023
    located anywhere in the EVPN network without the DHCP messages being
    blocked by SAVI.  EVPN itself does not learn from DHCP, so until the
    address is assigned, DAD completed and the host have sent an NA
-   (response to a lookup or unsolicited NA), EVPN does not know about
-   the assigned address.  After the NA is sent, the address can be
-   learnt by EVPN, stored locally by the EVPN proxy-ND and distributed
-   by BGP per [RFC9161].
+   (response to a lookup or unsolicited NA), EVPN is not aware of the
+   assigned address.  After the NA is sent, the address can be learnt by
+   EVPN, stored locally by the EVPN proxy-ND, and distributed by BGP per
+   [RFC9161].
 
 5.  SLAAC and other IPv6 addresses
 
 5.1.  SAVI-FCFS background
 
    According to [RFC6620], any address, used as the source of a packet
-   or showing up as a target of a Neighbor Solicit (NS) message
+   or showing up as a target of a Neighbor Solicitation (NS) message
    (including a DAD NS) which is not locally known and validated is
    treated as a TENTATIVE address and a DAD NS (Duplicate Address
-   Detection Neighbor Solicit) with this address in the target field is
-   originated by the SAVI device and broadcasted to any validated or
-   trusted port.  A response received implies a duplication and/or IP
-   theft and on the contrary, no response allow to progress the state of
-   the address from TENTATIVE to VALID.
+   Detection Neighbor Solicitation) message with this address in the
+   target field is originated by the SAVI device and broadcasted to any
+   validated or trusted port.  A response received implies a duplication
+   and/or IP theft and on the contrary, no response allow to progress
+   the state of the address from TENTATIVE to VALID.
 
 5.2.  Interactions between SAVI-FCFS and EVPN
 
@@ -323,8 +323,8 @@ Internet-Draft           SAVI in an EVPN network               July 2023
 
    *  During the validation process for a Source, SAVI (ingress)
       originates a broadcast DAD, with target set to "Source" and
-      forward (model1) or signal (model2) it to EVPN which delivers it
-      to remote SAVI devices (over the wire or an API).  Only SAVI
+      forwards (model1) or signals (model2) it to EVPN, which delivers
+      it to remote SAVI devices (over the wire or an API).  Only SAVI
       devices that have a local validated entry or a trusted interface
       forward the DAD to enable the target to defend itself.
 
@@ -361,8 +361,8 @@ Internet-Draft           SAVI in an EVPN network               July 2023
    3.  Only instances that have the entry "VALID" or trusted ports
        forward the DAD
 
-   In the absence of a response from HOST, entry state at the ingress
-   SAVI progresses to VALID
+   In the absence of a response from HOST, the state of the entry at the
+   ingress SAVI progresses to VALID
 
    For B, after step 3:
 
@@ -452,12 +452,13 @@ Internet-Draft           SAVI in an EVPN network               July 2023
 
    Other cases are described in the next sections
 
-   As described in [RFC6620], when validating source address which is
-   not known to in the local SAVI table, multicast DAD NS message is
+   As described in [RFC6620], when validating a source address that is
+   not known to in the local SAVI table, a multicast DAD NS message is
    sent to all remote SAVI instances to check for the presence of this
    address on any of these instances.  This process can be optimized by
    leveraging the content of EVPN / BGP tables on VTEPs and "unicast-
-   forward" the DAD to the known address owner, if any.
+   forward" the DAD to the known address owner, if any, more in
+   [RFC6085].
 
    Depending on the presence of the address in the BGP table and if
    present, whether the address is active or not, there are three
@@ -496,7 +497,6 @@ Internet-Draft           SAVI in an EVPN network               July 2023
    entry is in VALID state, the traffic forwarded from that address will
    be forwarded into EVPN network and the IP address will be learned by
    the EVPN.  This is shown in Figure 4
-
 
 
 
@@ -624,6 +624,11 @@ Internet-Draft           SAVI in an EVPN network               July 2023
               RFC 6620, DOI 10.17487/RFC6620, May 2012,
               <https://www.rfc-editor.org/info/rfc6620>.
 
+   [RFC6085]  Gundavelli, S., Townsley, M., Troan, O., and W. Dec,
+              "Address Mapping of IPv6 Multicast Packets on Ethernet",
+              RFC 6085, DOI 10.17487/RFC6085, January 2011,
+              <https://www.rfc-editor.org/info/rfc6085>.
+
    [RFC7513]  Bi, J., Wu, J., Yao, G., and F. Baker, "Source Address
               Validation Improvement (SAVI) Solution for DHCP",
               RFC 7513, DOI 10.17487/RFC7513, May 2015,
@@ -661,11 +666,6 @@ Authors' Addresses
    Eric Levy-Abegnoli
    Cisco Systems, Inc
    Emerald Square, Batiment C
-   rue Evariste Galois
-   06410 BIOT - Sophia Antipolis
-   France
-
-   Phone: +33 497 23 26 20
 
 
 
@@ -674,6 +674,11 @@ Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 12]
 Internet-Draft           SAVI in an EVPN network               July 2023
 
 
+   rue Evariste Galois
+   06410 BIOT - Sophia Antipolis
+   France
+
+   Phone: +33 497 23 26 20
    Email: elevyabe@cisco.com
 
 
@@ -696,11 +701,6 @@ Internet-Draft           SAVI in an EVPN network               July 2023
 
    Phone: +1 613 254 4545
    Email: rkovacin@cisco.com
-
-
-
-
-
 
 
 

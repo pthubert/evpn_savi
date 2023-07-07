@@ -120,7 +120,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
       <dt>NA:</dt><dd> Neighbor Advertisement (message)</dd>
       <dt>ND:</dt><dd> Neighbor Discovery (protocol)</dd>
       <dt>NDP:</dt><dd> Neighbor Discovery Protocol </dd>
-      <dt>NS:</dt><dd> Neighbor Solicitation (message) </dd>
+      <dt>NS:</dt><dd>   Neighbor Solicitation (message) </dd>
       <dt>PE:</dt><dd> Provider Edge (router)</dd>
       <dt>VLAN:</dt><dd>Virtual Local Area Network</dd>
       <dt>VxLAN:</dt><dd>Virtual Extensible LAN</dd>
@@ -238,8 +238,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   The whole DHCP address assignment procedure is performed using IPv6 Link-Local addresses, which are expected to be VALID prior to
   the beginning of this process. The DHCP server or relay can then be located anywhere in the EVPN network without the DHCP messages
   being blocked by SAVI.  EVPN itself does not learn from DHCP, so until the address is assigned, DAD completed and the host
-  have sent an NA (response to a lookup or unsolicited NA), EVPN does not know about the assigned address. After the NA is sent,
-  the address can be learnt by EVPN, stored locally by the EVPN proxy-ND and distributed by BGP per <xref target="RFC9161"/>.
+  have sent an NA (response to a lookup or unsolicited NA), EVPN is not aware of the assigned address. After the NA is sent,
+  the address can be learnt by EVPN, stored locally by the EVPN proxy-ND, and distributed by BGP per <xref target="RFC9161"/>.
 </t>
 </section><!--"DHCP assigned addresses -->
 </section><!--"Interactions between SAVI/RFC7513 and EVPN" -->
@@ -248,8 +248,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <section> <name> SAVI-FCFS background </name>
 <t>
   According to <xref target="RFC6620"/>, any address, used as the source of a packet or showing up as a target of a Neighbor
-  Solicit (NS) message (including a DAD NS) which is not locally known and validated is treated as a TENTATIVE address and a
-  DAD NS (Duplicate Address Detection Neighbor Solicit) with this address in the target field is originated by the SAVI device
+  Solicitation (NS) message (including a DAD NS) which is not locally known and validated is treated as a TENTATIVE address and a
+  DAD NS (Duplicate Address Detection Neighbor Solicitation) message with this address in the target field is originated by the SAVI device
   and broadcasted to any validated or trusted port. A response received implies a duplication and/or IP theft and on the contrary,
   no response allow to progress the state of the address from TENTATIVE to VALID.
 </t>
@@ -263,7 +263,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <li>Sources not validated by SAVI are not learnt nor distributed by EVPN: SAVI does not allow NA to be forwarded (model 1)
   or signaled (model 2) to EVPN.</li>
   <li>During the validation process for a Source, SAVI (ingress) originates a broadcast DAD, with target set to  “Source”
-  and forward (model1) or signal (model2) it to EVPN which delivers it to remote SAVI devices (over the wire or an API).
+  and forwards (model1) or signals (model2) it to EVPN, which delivers it to remote SAVI devices (over the wire or an API).
   Only SAVI devices that have a local validated entry or a trusted interface forward the DAD to enable the target to defend itself.</li>
   <li>In case a response is sent by one of the DAD recipients, it is a broadcast NA (to “all-nodes”), processed by SAVI (egress).
   The source is a SAVI validated source, and as such, delivered from (egress) SAVI to EVPN for delivery to all VTEPs and finally
@@ -280,7 +280,7 @@ Sequence goes like this for A:
   <li> Only instances that have the entry "VALID" or trusted ports forward the DAD</li>
 </ol>
 <t>
-  In the absence of a response from HOST, entry state at the ingress SAVI progresses to VALID
+  In the absence of a response from HOST, the state of the entry at the ingress SAVI progresses to VALID
 </t>
 <t>For B, after step 3:
 </t>
@@ -346,10 +346,9 @@ Sequence goes like this for A:
 </t>
 <t>Other cases are described in the next sections</t>
 <t>
-  As described in <xref target="RFC6620"/>, when validating source address which is not known to in the local SAVI table, multicast
-  DAD NS message is sent to all remote SAVI instances to check for the presence of this address on any of these instances.
+  As described in <xref target="RFC6620"/>, when validating a source address that is not known to in the local SAVI table, a multicast DAD NS message is sent to all remote SAVI instances to check for the presence of this address on any of these instances.
   This process can be optimized by leveraging the content of EVPN / BGP tables on VTEPs and "unicast-forward" the DAD to the known
-  address owner, if any.
+  address owner, if any, more in <xref target="RFC6085"/>.
 </t>
 <t>
   Depending on the presence of the address in the BGP table and if present, whether the address is active or not,
@@ -498,6 +497,8 @@ This would be an example of host mobility use case.
    <references > <name>Normative References</name>
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml'/> <!-- neighbor Discovery for IP version 6 (IPv6) -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6620.xml'/> <!-- FCFS SAVI: First-Come, First-Served Source -->
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6085.xml'/> <!-- F
+         Address Mapping of IPv6 Multicast Packets on Ethernet -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7513.xml'/> <!-- (SAVI) Solution for DHCP -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7432.xml'/> <!-- BGP MPLS-Based Ethernet VPN -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml'/> <!-- IPv6-->
