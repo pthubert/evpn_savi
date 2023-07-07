@@ -95,11 +95,11 @@ Table of Contents
    SAVI specification [RFC6620] describes a mechanism that provides
    Source Address Validation (Improvements) for IPv6 networks based the
    First Come First Serve principle, applicable to any type of IPv6
-   addresses, including those assigned through IPv6 Neighbor Discovery
-   (ND) [RFC4861] Stateless Address Autoconfiguration (SLAAC) [RFC4862]
-   .  According to the specification, an IPv6 entry freshly snooped on a
-   SAVI device need to reach the "VALID " state before traffic sourced
-   with it can be forwarded.
+   addresses, including those assigned through IPv6 [RFC4291][RFC8200]
+   Neighbor Discovery (ND) [RFC4861] Stateless Address Autoconfiguration
+   (SLAAC) [RFC4862] .  According to the specification, an IPv6 entry
+   freshly snooped on a SAVI device need to reach the "VALID " state
+   before traffic sourced with it can be forwarded.
 
    SAVI specification [RFC7513] describes a similar mechanism for
    addresses assigned by DHCPv6/DHCPv4 server.  Again, traffic sourced
@@ -634,6 +634,11 @@ Internet-Draft           SAVI in an eVPN network               July 2023
               Ethernet VPN", RFC 7432, DOI 10.17487/RFC7432, February
               2015, <https://www.rfc-editor.org/info/rfc7432>.
 
+   [RFC8200]  Deering, S. and R. Hinden, "Internet Protocol, Version 6
+              (IPv6) Specification", STD 86, RFC 8200,
+              DOI 10.17487/RFC8200, July 2017,
+              <https://www.rfc-editor.org/info/rfc8200>.
+
    [RFC9161]  Rabadan, J., Ed., Sathappan, S., Nagaraj, K., Hankins, G.,
               and T. King, "Operational Aspects of Proxy ARP/ND in
               Ethernet Virtual Private Networks", RFC 9161,
@@ -661,17 +666,15 @@ Authors' Addresses
    France
 
    Phone: +33 497 23 26 20
-   Email: elevyabe@cisco.com
-
-
-
-
 
 
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 12]
 
 Internet-Draft           SAVI in an eVPN network               July 2023
+
+
+   Email: elevyabe@cisco.com
 
 
    Pascal Thubert
@@ -693,9 +696,6 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
    Phone: +1 613 254 4545
    Email: rkovacin@cisco.com
-
-
-
 
 
 

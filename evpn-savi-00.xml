@@ -89,7 +89,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <t>
     SAVI specification <xref target="RFC6620"/> describes a mechanism that provides Source Address Validation (Improvements)
     for IPv6 networks based the First Come First Serve principle, applicable to any type of IPv6 addresses, including those
-    assigned through IPv6 Neighbor Discovery (ND) <xref target="RFC4861"/> Stateless Address Autoconfiguration (SLAAC) <xref target="RFC4862"/> .
+    assigned through IPv6 <xref target="RFC4291"/><xref target="RFC8200"/> Neighbor Discovery (ND) <xref target="RFC4861"/> Stateless Address Autoconfiguration (SLAAC) <xref target="RFC4862"/> .
     According to the specification,  an IPv6 entry freshly snooped on a SAVI device need to reach the “VALID “ state before traffic
     sourced with it can be forwarded.
   </t>
@@ -503,6 +503,7 @@ This would be an example of host mobility use case.
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6620.xml'/> <!-- FCFS SAVI: First-Come, First-Served Source -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7513.xml'/> <!-- (SAVI) Solution for DHCP -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7432.xml'/> <!-- BGP MPLS-Based Ethernet VPN -->
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml'/> <!-- IPv6-->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9161.xml'/> <!-- Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Networks -->
 
    </references>
