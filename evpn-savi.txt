@@ -127,7 +127,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
    Assuming one would want to perform Source Address Validation in an
    EVPN network, two models can be deployed:
 
-   1.  the SAVI function run on SAVI switches external to PEs
+   1.  the SAVI function runs on SAVI switches external to PEs
 
    2.  the SAVI function is co-located with the PEs
 
@@ -233,7 +233,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
              |            +- - - -- - - - - - -+            |
              |            |                    |            |
              |            |    L3 NETWORK      |            |
-             |   VTEP/PE  |                    | VTEP/PE    |
+             |    VTEP/PE |                    | VTEP/PE    |
    +-------+ | +--------+-+------+      +------+-+--------+ | +-------+
    |       | | |SAVI    |        |      |        | SAVI   | | |       |
    |HOST/CE| | |       API  EVPN |      | EVPN  API       | | |HOST/CE|
@@ -265,13 +265,13 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 4.1.  SAVI-DHCP background
 
-   SAVI-DHCP specification [RFC7513] describes a mechanism that provides
-   source address validation for IPv6 networks where addresses are
-   assigned by DHCPv6 server.  The address validation is achieved by
-   snooping DHCPv6 address assignments, which is known as DHCP Snooping,
-   or validating discovered address with the DHCP server which is
-   described as Data Snooping process.  Both processes are described in
-   detail in [RFC7513].
+   The "SAVI Solution for DHCP" [RFC7513] specification describes a
+   mechanism that provides source address validation for IPv6 networks
+   where addresses are assigned by DHCPv6 server.  The address
+   validation is achieved by snooping DHCPv6 address assignments, which
+   is known as DHCP Snooping, or validating discovered address with the
+   DHCP server which is described as Data Snooping process.  Both
+   processes are described in detail in [RFC7513].
 
 
 
