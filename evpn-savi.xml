@@ -87,28 +87,24 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <section anchor="introduction"> <name>Introduction</name>
 
   <t>
-    SAVI specification <xref target="RFC6620"/> describes a mechanism that provides Source Address Validation (Improvements)
-    for IPv6 networks based the First Come First Serve principle, applicable to any type of IPv6 addresses, including those
+    <xref target="RFC6620"/> describes a mechanism that provides Source Address Validation Improvements (SAVI)
+    for IPv6 networks based the First Come First Serve (FCFS) principle, applicable to any type of IPv6 addresses, including those
     assigned through IPv6 <xref target="RFC4291"/><xref target="RFC8200"/> Neighbor Discovery (ND) <xref target="RFC4861"/>
     Stateless Address Autoconfiguration (SLAAC) <xref target="RFC4862"/> .
-    According to the specification,  an IPv6 entry freshly snooped on a SAVI device need to reach the “VALID“ state before traffic
+    According to that specification,  an IPv6 entry freshly snooped on a SAVI device needs to reach the “VALID“ state before traffic
     sourced with it can be forwarded.
   </t>
   <t>
-    SAVI specification <xref target="RFC7513"/> describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 server.
-    Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.
+    Another SAVI specification, <xref target="RFC7513"/>, describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 server. Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.
   </t>
 <t>
-  EVPN specification  <xref target="RFC7432"/>, section 10, indicates that a PE may learn IP addresses and advertise them to other PEs.
-  It allows PEs to execute proxy ARP/ND function specified in more details in  <xref target="RFC9161"/>. This EVPN specification
-  details the learning steps for IPv6 addresses.  According to section 3.2, IPv6 addresses should be learnt
-  by snooping Neighbor Advertisements (NA), then advertised in an EVPN MAC/IP Advertisement route, and finally used on remote PEs to perform
-  a proxy-ND function.
+  Section 10 of <xref target="RFC7432">"BGP MPLS-Based Ethernet VPN"</xref>(EVPN) indicates that a Provider Edge (PE) router may learn IP addresses and advertise them to other PEs.
+  EVPN allows PEs to execute a proxy ARP/ND function that is further detailed in <xref target="RFC9161">"Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Network"</xref>. According to section 3.2 of <xref target="RFC9161"/>, IPv6 addresses should be learnt by snooping Neighbor Advertisements (NA), then advertised in an EVPN MAC/IP Advertisement route, and finally used on remote PEs to perform said proxy ARP/ND function.
   </t>
   <t>Assuming one would want to perform Source Address Validation in an EVPN network, two models can be deployed:</t>
   <ol>
-    <li>SAVI function run on SAVI switches external to PEs</li>
-    <li>SAVI function is co-located with the PEs</li>
+    <li>the SAVI function runs on SAVI switches external to PEs</li>
+    <li>the SAVI function is co-located with the PEs</li>
   </ol>
   <t> These two models are reviewed in <xref target='models'/>. Corresponding interactions between SAVI and eVPN are reviewed as
   well in this document.
@@ -119,15 +115,17 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <section anchor='acronyms' > <name>Acronyms</name>
     <t> This document uses the following abbreviations:</t>
     <dl spacing='compact'>
+      <dt>CE:</dt><dd> Customer Edge (router)</dd>
       <dt>DAD:</dt><dd>Duplicate address Detection </dd>
       <dt>NA:</dt><dd> Neighbor Advertisement (message)</dd>
       <dt>ND:</dt><dd> Neighbor Discovery (protocol)</dd>
       <dt>NDP:</dt><dd> Neighbor Discovery Protocol </dd>
       <dt>NS:</dt><dd> Neighbor Solicitation (message) </dd>
+      <dt>PE:</dt><dd> Provider Edge (router)</dd>
       <dt>VLAN:</dt><dd>Virtual Local Area Network</dd>
       <dt>VxLAN:</dt><dd>Virtual Extensible LAN</dd>
       <dt>eVPN:</dt><dd>Ethernet Virtual Private Network </dd>
-      <dt>VTEP:</dt><dd>VXLAN Tunnel EndPoint </dd>
+      <dt>VTEP:</dt><dd>VXLAN Tunnel EndPoint (node)</dd>
       <dt>BGP:</dt><dd>Border Gateway Protocol </dd>
     </dl>
 </section><!-- Acronyms -->
@@ -142,8 +140,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
     The SAVI devices operate as a verification perimeter between untrusted clients (CEs or Hosts) and PEs (or VTEPs).
     As specified in <xref target="RFC6620"/> and <xref target="RFC7513"/>, only validated addresses can inject traffic over the
     trusted perimeter. The mechanisms to validate addresses are specified in these two RFCs. As long as an address is not
-    validated, the only messages allowed from the SAVI device towards the EVPN (VTEP) networks are IPv6 ND DAD messages (sourced
-    with zero), which are not used by EVPN proxy for learning. Therefore, as long as an address is not validated by SAVI, it remains
+    validated, the only messages allowed from the SAVI device towards the EVPN (VTEP) networks are IPv6 NS DAD messages (with the IP source is set to the unspecified address, see section section-2.5.2 of <xref target="RFC4291"/> ), which are not used by EVPN proxy for learning. Therefore, as long as an address is not validated by SAVI, it remains
     unknown by EVPN.
   </t>
 
