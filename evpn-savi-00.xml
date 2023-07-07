@@ -101,7 +101,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <t>
   EVPN specification  <xref target="RFC7432"/>, section 10, indicates that a PE may learn IP addresses and advertise them to other PEs.
   It allows PEs to execute proxy ARP/ND function specified in more details in  <xref target="RFC9161"/>. This EVPN specification
-  details the learning steps for IPv6 addresses.   According to section 3.2, IPv6 addresses should be learnt
+  details the learning steps for IPv6 addresses.  According to section 3.2, IPv6 addresses should be learnt
   by snooping Neighbor Advertisements (NA), then advertised in an EVPN MAC/IP Advertisement route, and finally used on remote PEs to perform
   a proxy-ND function.
   </t>
