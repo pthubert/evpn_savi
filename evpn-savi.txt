@@ -9,8 +9,8 @@ Expires: 8 January 2024                                    Cisco Systems
                                                              7 July 2023
 
 
-                        SAVI in an eVPN network
-                  draft-levyabegnoli-bess-evpn-savi-00
+                        SAVI in an EVPN network
+                  draft-levyabegnoli-bess-EVPN-savi-00
 
 Abstract
 
@@ -19,13 +19,13 @@ Abstract
    verify Source Address ownership.  The main mechanisms are described
    in [RFC6620] and [RFC7513].
 
-   [RFC7432] and furthermore [RFC9161] specify how an eVPN network could
+   [RFC7432] and furthermore [RFC9161] specify how an EVPN network could
    learn and distribute IP addresses.  [RFC9161] describes a mechanism
    by which the PE can proxy some ND messages based on this information.
 
    In this document, we review how these two sets of specifications and
    underlying mechanisms can interact to provide Source Address
-   Validation in an eVPN netwrok.
+   Validation in an EVPN netwrok.
 
 Status of This Memo
 
@@ -55,7 +55,7 @@ Copyright Notice
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 1]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -111,7 +111,7 @@ Table of Contents
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 2]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    Section 10 of "BGP MPLS-Based Ethernet VPN" [RFC7432](EVPN) indicates
@@ -132,7 +132,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
    2.  the SAVI function is co-located with the PEs
 
    These two models are reviewed in Section 3.  Corresponding
-   interactions between SAVI and eVPN are reviewed as well in this
+   interactions between SAVI and EVPN are reviewed as well in this
    document.
 
 2.  Acronyms
@@ -148,7 +148,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
    PE:  Provider Edge (router)
    VLAN:  Virtual Local Area Network
    VxLAN:  Virtual Extensible LAN
-   eVPN:  Ethernet Virtual Private Network
+   EVPN:  Ethernet Virtual Private Network
    VTEP:  VXLAN Tunnel EndPoint (node)
    BGP:  Border Gateway Protocol
 
@@ -167,7 +167,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 3]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    specified in these two RFCs.  As long as an address is not validated,
@@ -208,7 +208,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
    Model2 is fundamentally the same as the model1.  SAVI instance acts
    as a Security wall between untrusted clients and the VTEPs, and only
    allows validated sources to inject traffic beyond the VTEP.  The
-   injection happens over an API between SAVI instance and eVPN rather
+   injection happens over an API between SAVI instance and EVPN rather
    than over a physical wire.  Furthermore, only validated sources are
    learnt per section 3.2 of [RFC9161].
 
@@ -223,7 +223,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 4]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
                                 protection perimeter
@@ -279,7 +279,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 5]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    During DHCP Snooping process and associated state machine, an IP
@@ -291,12 +291,12 @@ Internet-Draft           SAVI in an eVPN network               July 2023
    The whole DHCP address assignment procedure is performed using IPv6
    Link-Local addresses, which are expected to be VALID prior to the
    beginning of this process.  The DHCP server or relay can then be
-   located anywhere in the eVPN network without the DHCP messages being
-   blocked by SAVI.  eVPN itself does not learn from DHCP, so until the
+   located anywhere in the EVPN network without the DHCP messages being
+   blocked by SAVI.  EVPN itself does not learn from DHCP, so until the
    address is assigned, DAD completed and the host have sent an NA
-   (response to a lookup or unsolicited NA), eVPN does not know about
+   (response to a lookup or unsolicited NA), EVPN does not know about
    the assigned address.  After the NA is sent, the address can be
-   learnt by eVPN, stored locally by the eVPN proxy-ND and distributed
+   learnt by EVPN, stored locally by the EVPN proxy-ND and distributed
    by BGP per [RFC9161].
 
 5.  SLAAC and other IPv6 addresses
@@ -323,7 +323,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
    *  During the validation process for a Source, SAVI (ingress)
       originates a broadcast DAD, with target set to "Source" and
-      forward (model1) or signal (model2) it to eVPN which delivers it
+      forward (model1) or signal (model2) it to EVPN which delivers it
       to remote SAVI devices (over the wire or an API).  Only SAVI
       devices that have a local validated entry or a trusted interface
       forward the DAD to enable the target to defend itself.
@@ -335,7 +335,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 6]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    *  In case a response is sent by one of the DAD recipients, it is a
@@ -345,8 +345,8 @@ Internet-Draft           SAVI in an eVPN network               July 2023
       (ingress) SAVI to complete the validation process of the target
       "Source".
 
-   *  The first NA sent by this Source triggers eVPN proxy learning and
-      eVPN distribution to all VTEPs per [RFC9161]
+   *  The first NA sent by this Source triggers EVPN proxy learning and
+      EVPN distribution to all VTEPs per [RFC9161]
 
    The flow below show two sequences, A and B, with A where Host does
    not respond to DAD send by SAVI and B where host does repond.
@@ -391,7 +391,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 7]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
                                   layer3 network
@@ -434,7 +434,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 6.  Enhanced SAVI/EVPN interactions
 
-   In model2 where SAVI is co-located with BGP and eVPN proxy table,
+   In model2 where SAVI is co-located with BGP and EVPN proxy table,
    upon starting the validation process for an address, SAVI MAY perform
    a lookup into EVPN/BGP proxy table, where entry can be 1) not found,
    2) local or 3)remote.
@@ -447,7 +447,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 8]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    Other cases are described in the next sections
@@ -503,7 +503,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                 [Page 9]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    SAVI instance MAY signal the entry to EVPN as soon as it becomes
@@ -544,12 +544,12 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 6.3.  Address found in BGP/EVPN table, remote active
 
    As in previous section, local SAVI sends the multicast NS DAD to the
-   known (by eVPN, as a remote entry) target but this time, but this
+   known (by EVPN, as a remote entry) target but this time, but this
    time, the target responds with a multicast NA.  The validation
    process will follow the steps as specified in [RFC6620] and move the
    entry to NO_BIND state.  Any NA received on this local SAVI instance
    from the validating port will not be signalled to EVPN and will not
-   be learnt by eVPN ND proxy.  This is a IP duplication / theft use
+   be learnt by EVPN ND proxy.  This is a IP duplication / theft use
    case and should be signalled through logging or by triggering an
    alarm.
 
@@ -559,7 +559,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 10]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
                        local VTEP                  remote VTEP
@@ -615,7 +615,7 @@ Internet-Draft           SAVI in an eVPN network               July 2023
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 11]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    [RFC6620]  Nordmark, E., Bagnulo, M., and E. Levy-Abegnoli, "FCFS
@@ -671,7 +671,7 @@ Authors' Addresses
 
 Levy-Abegnoli, et al.    Expires 8 January 2024                [Page 12]
 
-Internet-Draft           SAVI in an eVPN network               July 2023
+Internet-Draft           SAVI in an EVPN network               July 2023
 
 
    Email: elevyabe@cisco.com
