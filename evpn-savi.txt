@@ -25,7 +25,7 @@ Abstract
 
    In this document, we review how these two sets of specifications and
    underlying mechanisms can interact to provide Source Address
-   Validation in an EVPN netwrok.
+   Validation in an EVPN network.
 
 Status of This Memo
 
@@ -97,7 +97,7 @@ Table of Contents
    First Serve (FCFS) principle, applicable to any type of IPv6
    addresses, including those assigned through IPv6 [RFC4291][RFC8200]
    Neighbor Discovery (ND) [RFC4861] Stateless Address Autoconfiguration
-   (SLAAC) [RFC4862] .  According to that specification, an IPv6 entry
+   (SLAAC) [RFC4862].  According to that specification, an IPv6 entry
    freshly snooped on a SAVI device needs to reach the "VALID" state
    before traffic sourced with it can be forwarded.
 
@@ -140,7 +140,7 @@ Internet-Draft           SAVI in an EVPN network               July 2023
    This document uses the following abbreviations:
 
    CE:  Customer Edge (router)
-   DAD:  Duplicate address Detection
+   DAD:  Duplicate Address Detection
    NA:  Neighbor Advertisement (message)
    ND:  Neighbor Discovery (protocol)
    NDP:  Neighbor Discovery Protocol
@@ -205,7 +205,7 @@ Internet-Draft           SAVI in an EVPN network               July 2023
    same box.  SAVI device is referenced as a "SAVI instance".  This
    model is presented in Figure 2.
 
-   Model2 is fundamentally the same as the model1.  SAVI instance acts
+   Model 2 is fundamentally the same as the model 1.  SAVI instance acts
    as a Security wall between untrusted clients and the VTEPs, and only
    allows validated sources to inject traffic beyond the VTEP.  The
    injection happens over an API between SAVI instance and EVPN rather
@@ -323,7 +323,7 @@ Internet-Draft           SAVI in an EVPN network               July 2023
 
    *  During the validation process for a Source, SAVI (ingress)
       originates a broadcast DAD, with target set to "Source" and
-      forwards (model1) or signals (model2) it to EVPN, which delivers
+      forwards (model 1) or signals (model 2) it to EVPN, which delivers
       it to remote SAVI devices (over the wire or an API).  Only SAVI
       devices that have a local validated entry or a trusted interface
       forward the DAD to enable the target to defend itself.
@@ -346,7 +346,7 @@ Internet-Draft           SAVI in an EVPN network               July 2023
       "Source".
 
    *  The first NA sent by this Source triggers EVPN proxy learning and
-      EVPN distribution to all VTEPs per [RFC9161]
+      EVPN distribution to all VTEPs per [RFC9161].
 
    The flow below show two sequences, A and B, with A where Host does
    not respond to DAD send by SAVI and B where host does repond.
@@ -434,7 +434,7 @@ Internet-Draft           SAVI in an EVPN network               July 2023
 
 6.  Enhanced SAVI/EVPN interactions
 
-   In model2 where SAVI is co-located with BGP and EVPN proxy table,
+   In model 2 where SAVI is co-located with BGP and EVPN proxy table,
    upon starting the validation process for an address, SAVI MAY perform
    a lookup into EVPN/BGP proxy table, where entry can be 1) not found,
    2) local or 3)remote.
@@ -544,8 +544,8 @@ Internet-Draft           SAVI in an EVPN network               July 2023
 6.3.  Address found in BGP/EVPN table, remote active
 
    As in previous section, local SAVI sends the multicast NS DAD to the
-   known (by EVPN, as a remote entry) target but this time, but this
-   time, the target responds with a multicast NA.  The validation
+   known (by EVPN, as a remote entry) target which can be "unicast-forwarded",
+   but this time, the target responds with a multicast NA.  The validation
    process will follow the steps as specified in [RFC6620] and move the
    entry to NO_BIND state.  Any NA received on this local SAVI instance
    from the validating port will not be signalled to EVPN and will not
