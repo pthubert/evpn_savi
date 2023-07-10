@@ -139,8 +139,9 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <t>
     The SAVI devices operate as a verification perimeter between untrusted clients (CEs or Hosts) and PEs (or VTEPs).
     As specified in <xref target="RFC6620"/> and <xref target="RFC7513"/>, only validated addresses can inject traffic over the
-    trusted perimeter. The mechanisms to validate addresses are specified in these two RFCs. As long as an address is not
-    validated, the only messages allowed from the SAVI device towards the EVPN (VTEP) networks are IPv6 NS DAD messages (with the IP source is set to the unspecified address, see section section-2.5.2 of <xref target="RFC4291"/> ), which are not used by EVPN proxy for learning. Therefore, as long as an address is not validated by SAVI, it remains
+    trusted perimeter. The mechanisms to validate addresses are specified in these two RFCs. Note that IPv6 DAD NS (IP source is set to
+    the unspecified address, see section section-2.5.2 of <xref target="RFC4291"/> ), used by SAVI for validation, can still be
+    forwarded by EVPN but are not used by EVPN proxy for learning. Therefore, as long as an address is not validated by SAVI, it remains
     unknown by EVPN.
   </t>
 
@@ -224,13 +225,15 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <section anchor="dhcp"> <name>DHCP assigned addresses</name>
 <section> <name> SAVI-DHCP  background </name>
 <t>
-  The <xref target="RFC7513">"SAVI Solution for DHCP"</xref> specification describes a mechanism that provides source address validation for IPv6 networks where addresses are assigned by DHCPv6 server.
+  The <xref target="RFC7513">"SAVI Solution for DHCP"</xref> specification describes a mechanism that provides source address validation
+  for IPv6 networks where addresses are assigned by DHCPv6 server.
   The address validation is achieved by snooping DHCPv6 address assignments, which is known as DHCP Snooping,
   or validating discovered address with the DHCP server which is described as Data Snooping process.
   Both processes are described in detail in <xref target="RFC7513"/>.
 </t>
 <t>
-  During DHCP Snooping process and associated state machine, an IP entry freshly snooped on a SAVI device progresses from NO_BIND to BOUND.
+  During DHCP Snooping process and according to associated state machine, an IP entry freshly snooped on a SAVI device progresses
+  from NO_BIND to BOUND.
 </t>
   </section><!--DHCP SAVI background -->
 <section> <name> Interactions between RFC7513 and EVPN </name>
@@ -248,10 +251,10 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <section> <name> SAVI-FCFS background </name>
 <t>
   According to <xref target="RFC6620"/>, any address, used as the source of a packet or showing up as a target of a Neighbor
-  Solicitation (NS) message (including a DAD NS) which is not locally known and validated is treated as a TENTATIVE address and a
-  DAD NS (Duplicate Address Detection Neighbor Solicitation) message with this address in the target field is originated by the SAVI device
-  and broadcasted to any validated or trusted port. A response received implies a duplication and/or IP theft and on the contrary,
-  no response allow to progress the state of the address from TENTATIVE to VALID.
+  Advertisement (NA) or a target of a DAD Neighbor Solicitation (NS), which is not locally known and validated, is treated as
+  a TENTATIVE address and a DAD NS (Duplicate Address Detection Neighbor Solicitation) message with this address in the target
+  field is originated by the SAVI device and broadcasted to any validated or trusted port. A response received implies a
+  duplication and/or IP theft and on the contrary, no response allow to progress the state of the address from TENTATIVE to VALID.
 </t>
 </section><!--"SAVI-FCFS background" -->
 
@@ -266,26 +269,26 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   and forwards (model 1) or signals (model 2) it to EVPN, which delivers it to remote SAVI devices (over the wire or an API).
   Only SAVI devices that have a local validated entry or a trusted interface forward the DAD to enable the target to defend itself.</li>
   <li>In case a response is sent by one of the DAD recipients, it is a broadcast NA (to “all-nodes”), processed by SAVI (egress).
-  The source is a SAVI validated source, and as such, delivered from (egress) SAVI to EVPN for delivery to all VTEPs and finally
+  The source is expected to be a SAVI validated source, and as such, delivered from (egress) SAVI to EVPN for delivery to all VTEPs and finally
   to (ingress) SAVI to complete the validation process of the target “Source”.</li>
   <li>The first NA sent by this Source triggers EVPN proxy learning and EVPN distribution to all VTEPs per  <xref target="RFC9161"/>.</li>
 </ul>
 
-<t> The flow below show two sequences, A and B, with A where Host does not respond to DAD send by SAVI and B where host does repond.
+<t> The flow below shows two sequences, A and B, with A where Host does not respond to DAD sent by SAVI and B where host does respond.
 Sequence goes like this for A:
 </t>
 <ol>
-  <li>data sourced with S is received on the ingress SAVI instance. An entry for S is created in TENTATIVE state</li>
-  <li>A DAD is build with target=S and broadcasted to all SAVI instances over the EVPN network</li>
-  <li> Only instances that have the entry "VALID" or trusted ports forward the DAD</li>
+  <li>Data sourced with S is received on the ingress SAVI instance. An entry for S is created in TENTATIVE state.</li>
+  <li>A DAD is built with target=S and broadcasted to all SAVI instances over the EVPN network.</li>
+  <li> Only instances that have the entry "S" in VALID state or trusted ports forward the DAD.</li>
 </ol>
 <t>
-  In the absence of a response from HOST, the state of the entry at the ingress SAVI progresses to VALID
+  In the absence of a response from HOST, the state of the "S" entry at the ingress SAVI progresses to VALID.
 </t>
 <t>For B, after step 3:
 </t>
 <ol start="4">
-  <li> HOST responds to DAD with an NA</li>
+  <li> HOST responds to DAD with an NA.</li>
 </ol>
 <t>
   Upon receiving the NA, the ingress SAVI instance move the entry to NO_BIND and does not allow traffic from this source to
@@ -338,7 +341,7 @@ Sequence goes like this for A:
 <section anchor="enhanced"> <name>Enhanced SAVI/EVPN interactions</name>
 <t>
   In model 2 where SAVI is co-located with BGP and EVPN proxy table, upon starting the validation process for an address,
-  SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3)remote.
+  SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3) remote.
 </t>
 <t>
   If the entry is local, this is an error as it is expected only VALID entries should be learnt by EVPN ND proxy. The entry in the proxy
@@ -346,7 +349,8 @@ Sequence goes like this for A:
 </t>
 <t>Other cases are described in the next sections</t>
 <t>
-  As described in <xref target="RFC6620"/>, when validating a source address that is not known to in the local SAVI table, a multicast DAD NS message is sent to all remote SAVI instances to check for the presence of this address on any of these instances.
+  As described in <xref target="RFC6620"/>, when validating a source address that is not known in the local SAVI table, a multicast
+  DAD NS message is sent to all remote SAVI instances to check for the presence of this address on any of these instances.
   This process can be optimized by leveraging the content of EVPN / BGP tables on VTEPs and "unicast-forward" the DAD to the known
   address owner, if any, more in <xref target="RFC6085"/>.
 </t>
@@ -355,9 +359,9 @@ Sequence goes like this for A:
   there are three possible scenarios as described below.
 </t>
 <ol>
-  <li>Address not found in BGP/EVPN table</li>
-  <li>Address found in BGP/EVPN table, remote not active</li>
-  <li>Address found in BGP/EVPN table, remote active</li>
+  <li>Address not found in BGP/EVPN table.</li>
+  <li>Address found in BGP/EVPN table, remote not active.</li>
+  <li>Address found in BGP/EVPN table, remote active.</li>
 </ol>
 
 <section anchor="not_found"> <name>Address not found</name>
@@ -381,7 +385,7 @@ Sequence goes like this for A:
 <t>
   If the address is no longer active on the remote location, there will be no response and the validation process will follow
   the steps as specified in <xref target="RFC6620"/> to move the entry to VALID state. Once the entry is in VALID state, the traffic
-  forwarded from that address will be forwarded into EVPN network and the IP address will be learned by the EVPN. This is shown in
+  received from that address will be forwarded into EVPN network and the IP address will be learned by the EVPN. This is shown in
   <xref target="mobility"/>
 </t>
 <t>

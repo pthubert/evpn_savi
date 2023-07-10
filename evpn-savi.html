@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>SAVI in an eVPN network</title>
+<title>SAVI in an EVPN network</title>
 <meta content="Eric Levy-Abegnoli" name="author">
 <meta content="Pascal Thubert" name="author">
 <meta content="Ratko Kovacina" name="author">
@@ -15,17 +15,17 @@
       .
        
        
-       and furthermore   specify how an eVPN network could learn and distribute IP
+       and furthermore   specify how an EVPN network could learn and distribute IP
      addresses.    describes a mechanism by which the PE can proxy some ND messages based on this information.
        
        
      In this document, we review how these two sets of specifications and underlying mechanisms can interact to provide Source
-     Address Validation in an eVPN netwrok.
+     Address Validation in an EVPN network.
        
     " name="description">
 <meta content="xml2rfc 3.17.4" name="generator">
 <meta content="Draft" name="keyword">
-<meta content="draft-ietf-levy-abegnoli-evpn-savi-00" name="ietf.draft">
+<meta content="draft-levyabegnoli-bess-EVPN-savi-00" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.17.4
     Python 3.10.6
@@ -43,7 +43,7 @@
     wcwidth 0.2.6
     weasyprint 59.0
 -->
-<link href="https://author-tools.ietf.org/usr/src/app/tmp/ed9fe12b-8f76-4492-9b71-c9b2538e93d7/evpn-savi-00.xml" rel="alternate" type="application/rfc+xml">
+<link href="https://author-tools.ietf.org/usr/src/app/tmp/2ca14833-6303-4483-8dad-9fa736016a4b/evpn-savi.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -1208,20 +1208,20 @@ li > p:last-of-type:only-child {
   margin-bottom: 0;
 }
 </style>
-<link href="evpn-savi-00_fichiers/rfc-local.css" rel="stylesheet" type="text/css">
+<link href="evpn-savi_fichiers/rfc-local.css" rel="stylesheet" type="text/css">
 <script type="application/javascript">async function addMetadata(){try{const e=document.styleSheets[0].cssRules;for(let t=0;t<e.length;t++)if(/#identifiers/.exec(e[t].selectorText)){const a=e[t].cssText.replace("#identifiers","#external-updates");document.styleSheets[0].insertRule(a,document.styleSheets[0].cssRules.length)}}catch(e){console.log(e)}const e=document.getElementById("external-metadata");if(e)try{var t,a="",o=function(e){const t=document.getElementsByTagName("meta");for(let a=0;a<t.length;a++)if(t[a].getAttribute("name")===e)return t[a].getAttribute("content");return""}("rfc.number");if(o){t="https://www.rfc-editor.org/rfc/rfc"+o+".json";try{const e=await fetch(t);a=await e.json()}catch(e){t=document.URL.indexOf("html")>=0?document.URL.replace(/html$/,"json"):document.URL+".json";const o=await fetch(t);a=await o.json()}}if(!a)return;e.style.display="block";const s="",d="https://datatracker.ietf.org/doc",n="https://datatracker.ietf.org/ipr/search",c="https://www.rfc-editor.org/info",l=a.doc_id.toLowerCase(),i=a.doc_id.slice(0,3).toLowerCase(),f=a.doc_id.slice(3).replace(/^0+/,""),u={status:"Status",obsoletes:"Obsoletes",obsoleted_by:"Obsoleted By",updates:"Updates",updated_by:"Updated By",see_also:"See Also",errata_url:"Errata"};let h="<dl style='overflow:hidden' id='external-updates'>";["status","obsoletes","obsoleted_by","updates","updated_by","see_also","errata_url"].forEach(e=>{if("status"==e){a[e]=a[e].toLowerCase();var t=a[e].split(" "),o=t.length,w="",p=1;for(let e=0;e<o;e++)p<o?w=w+r(t[e])+" ":w+=r(t[e]),p++;a[e]=w}else if("obsoletes"==e||"obsoleted_by"==e||"updates"==e||"updated_by"==e){var g,m="",b=1;g=a[e].length;for(let t=0;t<g;t++)a[e][t]&&(a[e][t]=String(a[e][t]).toLowerCase(),m=b<g?m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>, ":m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>",b++);a[e]=m}else if("see_also"==e){var y,L="",C=1;y=a[e].length;for(let t=0;t<y;t++)if(a[e][t]){a[e][t]=String(a[e][t]);var _=a[e][t].slice(0,3),v=a[e][t].slice(3).replace(/^0+/,"");L=C<y?"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>, ":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>, ":"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>",C++}a[e]=L}else if("errata_url"==e){var R="";R=a[e]?R+"<a href='"+a[e]+"'>Errata exist</a> | <a href='"+d+"/"+l+"'>Datatracker</a>| <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>":"<a href='"+d+"/"+l+"'>Datatracker</a> | <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>",a[e]=R}""!=a[e]?"Errata"==u[e]?h+=`<dt>More info:</dt><dd>${a[e]}</dd>`:h+=`<dt>${u[e]}:</dt><dd>${a[e]}</dd>`:"Errata"==u[e]&&(h+=`<dt>More info:</dt><dd>${a[e]}</dd>`)}),h+="</dl>",e.innerHTML=h}catch(e){console.log(e)}else console.log("Could not locate metadata <div> element");function r(e){return e.charAt(0).toUpperCase()+e.slice(1)}}window.removeEventListener("load",addMetadata),window.addEventListener("load",addMetadata);</script>
 </head>
 <body class="xml2rfc">
-<script src="evpn-savi-00_fichiers/metadata.min.js"></script>
+<script src="evpn-savi_fichiers/metadata.min.js"></script>
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">SAVI in an eVPN network</td>
+<td class="center">SAVI in an EVPN network</td>
 <td class="right">July 2023</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Levy-Abegnoli, et al.</td>
-<td class="center">Expires 7 January 2024</td>
+<td class="center">Expires 11 January 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1232,12 +1232,12 @@ li > p:last-of-type:only-child {
 <dd class="workgroup">6MAN</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-07-06" class="published">6 July 2023</time>
+<time datetime="2023-07-10" class="published">10 July 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-01-07">7 January 2024</time></dd>
+<dd class="expires"><time datetime="2024-01-11">11 January 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1255,7 +1255,7 @@ li > p:last-of-type:only-child {
 </dd>
 </dl>
 </div>
-<h1 id="title">SAVI in an eVPN network</h1>
+<h1 id="title">SAVI in an EVPN network</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">
@@ -1265,11 +1265,11 @@ SAVI Working Group and provide a set of mechanisms and state
 are described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span> and
      <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span>.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">
-     <span>[<a href="#RFC7432" class="cite xref">RFC7432</a>]</span> and furthermore <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span> specify how an eVPN network could learn and distribute IP
+     <span>[<a href="#RFC7432" class="cite xref">RFC7432</a>]</span> and furthermore <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span> specify how an EVPN network could learn and distribute IP
      addresses. <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>  describes a mechanism by which the PE can proxy some ND messages based on this information.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 <p id="section-abstract-3">
      In this document, we review how these two sets of specifications and underlying mechanisms can interact to provide Source
-     Address Validation in an eVPN netwrok.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+     Address Validation in an EVPN network.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1290,7 +1290,7 @@ are described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 January 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 January 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1395,35 +1395,35 @@ are described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">
-    SAVI specification <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>
- describes a mechanism that provides Source Address Validation 
-(Improvements)
-    for IPv6 networks based the First Come First Serve principle, 
-applicable to any type of IPv6 addresses, including those
-    assigned through SLAAC.
-    According to the specification,  an IPv6 entry freshly snooped on a 
-SAVI device need to reach the “VALID “ state before traffic
+    <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span> 
+describes a mechanism that provides Source Address Validation 
+Improvements (SAVI)
+    for IPv6 networks based the First Come First Serve (FCFS) principle,
+ applicable to any type of IPv6 addresses, including those
+    assigned through IPv6 <span>[<a href="#RFC4291" class="cite xref">RFC4291</a>]</span><span>[<a href="#RFC8200" class="cite xref">RFC8200</a>]</span> Neighbor Discovery (ND) <span>[<a href="#RFC4861" class="cite xref">RFC4861</a>]</span>
+    Stateless Address Autoconfiguration (SLAAC) <span>[<a href="#RFC4862" class="cite xref">RFC4862</a>]</span>.
+    According to that specification,  an IPv6 entry freshly snooped on a
+ SAVI device needs to reach the “VALID“ state before traffic
     sourced with it can be forwarded.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">
-    SAVI specification <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span> describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 server.
-    Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.<a href="#section-1-2" class="pilcrow">¶</a></p>
+    Another SAVI specification, <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span>,
+ describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 
+server. Again, traffic sourced which such addresses can only be 
+forwarded when the address state is “BOUND”.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">
-  EVPN specification  <span>[<a href="#RFC7432" class="cite xref">RFC7432</a>]</span>, section 10, indicates that a PE may learn IP addresses and advertise them to other PEs.
-  It allows PEs to execute proxy ARP/ND function specified in more details in  <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.
- This EVPN specification
-  details the learning steps for IPv6 addresses.   According to section 
-3.2, IPv6 addresses should be learnt
-  by snooping Neighbor Advertisements (NA), then advertised in an EVPN 
-MAC/IP Advertisement route, and finally used on remote PEs to perform
-  a proxy-ND function.<a href="#section-1-3" class="pilcrow">¶</a></p>
+  Section 10 of <span><a href="#RFC7432" class="internal xref">"BGP MPLS-Based Ethernet VPN"</a> [<a href="#RFC7432" class="cite xref">RFC7432</a>]</span>(EVPN) indicates that a Provider Edge (PE) router may learn IP addresses and advertise them to other PEs.
+  EVPN allows PEs to execute a proxy ARP/ND function that is further detailed in <span><a href="#RFC9161" class="internal xref">"Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Network"</a> [<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>. According to section 3.2 of <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>,
+ IPv6 addresses should be learnt by snooping Neighbor Advertisements 
+(NA), then advertised in an EVPN MAC/IP Advertisement route, and finally
+ used on remote PEs to perform said proxy ARP/ND function.<a href="#section-1-3" class="pilcrow">¶</a></p>
 <p id="section-1-4">Assuming one would want to perform Source Address Validation in an EVPN network, two models can be deployed:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ol class="normal type-1" id="section-1-5" type="1" start="1">
-    <li id="section-1-5.1">SAVI function run on SAVI switches external to PEs<a href="#section-1-5.1" class="pilcrow">¶</a>
+    <li id="section-1-5.1">the SAVI function runs on SAVI switches external to PEs<a href="#section-1-5.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-1-5.2">SAVI function is co-located with the PEs<a href="#section-1-5.2" class="pilcrow">¶</a>
+        <li id="section-1-5.2">the SAVI function is co-located with the PEs<a href="#section-1-5.2" class="pilcrow">¶</a>
 </li>
       </ol>
-<p id="section-1-6"> These two models are reviewed in <a href="#models" class="auto internal xref">Section 3</a>. Corresponding interactions between SAVI and eVPN are reviewed as
+<p id="section-1-6"> These two models are reviewed in <a href="#models" class="auto internal xref">Section 3</a>. Corresponding interactions between SAVI and EVPN are reviewed as
   well in this document.<a href="#section-1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1434,44 +1434,52 @@ MAC/IP Advertisement route, and finally used on remote PEs to perform
       </h2>
 <p id="section-2-1"> This document uses the following abbreviations:<a href="#section-2-1" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlCompact dlParallel" id="section-2-2">
-        <dt id="section-2-2.1">DAD:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.2">Duplicate address Detection<a href="#section-2-2.2" class="pilcrow">¶</a>
+        <dt id="section-2-2.1">CE:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.2"> Customer Edge (router)<a href="#section-2-2.2" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.3">NA:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.4"> Neighbor Advertisement (message)<a href="#section-2-2.4" class="pilcrow">¶</a>
+<dt id="section-2-2.3">DAD:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.4">Duplicate Address Detection<a href="#section-2-2.4" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.5">ND:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.6"> Neighbor Discovery (protocol)<a href="#section-2-2.6" class="pilcrow">¶</a>
+<dt id="section-2-2.5">NA:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.6"> Neighbor Advertisement (message)<a href="#section-2-2.6" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.7">NDP:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.8"> Neighbor Discovery Protocol<a href="#section-2-2.8" class="pilcrow">¶</a>
+<dt id="section-2-2.7">ND:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.8"> Neighbor Discovery (protocol)<a href="#section-2-2.8" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.9">NS:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.10"> Neighbor Solicitation (message)<a href="#section-2-2.10" class="pilcrow">¶</a>
+<dt id="section-2-2.9">NDP:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.10"> Neighbor Discovery Protocol<a href="#section-2-2.10" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.11">VLAN:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.12">Virtual Local Area Network<a href="#section-2-2.12" class="pilcrow">¶</a>
+<dt id="section-2-2.11">NS:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.12">   Neighbor Solicitation (message)<a href="#section-2-2.12" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.13">VxLAN:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.14">Virtual Extensible LAN<a href="#section-2-2.14" class="pilcrow">¶</a>
+<dt id="section-2-2.13">PE:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.14"> Provider Edge (router)<a href="#section-2-2.14" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.15">eVPN:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.16">Ethernet Virtual Private Network<a href="#section-2-2.16" class="pilcrow">¶</a>
+<dt id="section-2-2.15">VLAN:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.16">Virtual Local Area Network<a href="#section-2-2.16" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.17">VTEP:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.18">VXLAN Tunnel EndPoint<a href="#section-2-2.18" class="pilcrow">¶</a>
+<dt id="section-2-2.17">VxLAN:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.18">Virtual Extensible LAN<a href="#section-2-2.18" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-2.19">BGP:</dt>
-        <dd style="margin-left: 1.5em" id="section-2-2.20">Border Gateway Protocol<a href="#section-2-2.20" class="pilcrow">¶</a>
+<dt id="section-2-2.19">EVPN:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.20">Ethernet Virtual Private Network<a href="#section-2-2.20" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-2.21">VTEP:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.22">VXLAN Tunnel EndPoint (node)<a href="#section-2-2.22" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-2.23">BGP:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.24">Border Gateway Protocol<a href="#section-2-2.24" class="pilcrow">¶</a>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -1486,14 +1494,14 @@ MAC/IP Advertisement route, and finally used on remote PEs to perform
     In model 1, a SAVI device is inserted between client (host or CE) and PE (or VTEP). This first model is straight forward
     and does not require any additional specification. It is presented in  <a href="#model1" class="auto internal xref">Figure 1</a>.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">
-    The SAVI devices operate as a verification perimeter between untrusted clients (CEs or Hosts) and PEs (or VTEPs). 
+    The SAVI devices operate as a verification perimeter between untrusted clients (CEs or Hosts) and PEs (or VTEPs).
     As specified in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span> and <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span>,
  only validated addresses can inject traffic over the
     trusted perimeter. The mechanisms to validate addresses are 
-specified in these two RFCs. As long as an address is not
-    validated, the only messages allowed from the SAVI device towards 
-the EVPN (VTEP) networks are IPv6 ND DAD messages (sourced
-    with zero), which are not used by EVPN proxy for learning. 
+specified in these two RFCs. Note that IPv6 DAD NS (IP source is set to
+    the unspecified address, see section section-2.5.2 of <span>[<a href="#RFC4291" class="cite xref">RFC4291</a>]</span>
+ ), used by SAVI for validation, can still be
+    forwarded by EVPN but are not used by EVPN proxy for learning. 
 Therefore, as long as an address is not validated by SAVI, it remains
     unknown by EVPN.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <span id="name-deployment-model-1"></span><div id="model1">
@@ -1531,9 +1539,9 @@ Therefore, as long as an address is not validated by SAVI, it remains
     In model 2, the SAVI device and the PE/VTEP are colapsed into the same box. SAVI device is referenced as a "SAVI instance".
     This model is presented in  <a href="#model2" class="auto internal xref">Figure 2</a>.<a href="#section-3-4" class="pilcrow">¶</a></p>
 <p id="section-3-5">
-    Model2 is fundamentally the same as the model1. SAVI instance acts as a Security wall between untrusted clients and
+    Model 2 is fundamentally the same as the model 1. SAVI instance acts as a Security wall between untrusted clients and
     the VTEPs, and only allows validated sources to inject traffic beyond the VTEP. The injection happens over an API between
-    SAVI instance and eVPN rather than over a physical wire. Furthermore, only validated sources are learnt per section 3.2
+    SAVI instance and EVPN rather than over a physical wire. Furthermore, only validated sources are learnt per section 3.2
     of <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-3-5" class="pilcrow">¶</a></p>
 <span id="name-deployment-model-2"></span><div id="model2">
 <figure id="figure-2">
@@ -1546,7 +1554,7 @@ Therefore, as long as an address is not validated by SAVI, it remains
           |            +- - - -- - - - - - -+            |
           |            |                    |            |
           |            |    L3 NETWORK      |            |
-          |   VTEP/PE  |                    | VTEP/PE    |
+          |    VTEP/PE |                    | VTEP/PE    |
 +-------+ | +--------+-+------+      +------+-+--------+ | +-------+
 |       | | |SAVI    |        |      |        | SAVI   | | |       |
 |HOST/CE| | |       API  EVPN |      | EVPN  API       | | |HOST/CE|
@@ -1588,14 +1596,15 @@ section  <a href="#enhanced" class="auto internal xref">Section 6</a><a href="#s
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-savi-dhcp-background" class="section-name selfRef">SAVI-DHCP  background</a>
         </h3>
 <p id="section-4.1-1">
-  SAVI-DHCP specification <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span> describes a mechanism that provides source address validation for IPv6 networks where
-  addresses are  assigned by DHCPv6 server.
+  The <span><a href="#RFC7513" class="internal xref">"SAVI Solution for DHCP"</a> [<a href="#RFC7513" class="cite xref">RFC7513</a>]</span> specification describes a mechanism that provides source address validation
+  for IPv6 networks where addresses are assigned by DHCPv6 server.
   The address validation is achieved by snooping DHCPv6 address assignments, which is known as DHCP Snooping,
   or validating discovered address with the DHCP server which is described as Data Snooping process.
   Both processes are described in detail in <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1-2">
-  During DHCP Snooping process and associated state machine, an IP entry
- freshly snooped on a SAVI device progresses from NO_BIND to BOUND.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+  During DHCP Snooping process and according to associated state 
+machine, an IP entry freshly snooped on a SAVI device progresses
+  from NO_BIND to BOUND.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 </section>
 <section id="section-4.2">
         <h3 id="name-interactions-between-rfc751">
@@ -1605,13 +1614,13 @@ section  <a href="#enhanced" class="auto internal xref">Section 6</a><a href="#s
   The whole DHCP address assignment procedure is performed using IPv6 
 Link-Local addresses, which are expected to be VALID prior to
   the beginning of this process. The DHCP server or relay can then be 
-located anywhere in the eVPN network without the DHCP messages
-  being blocked by SAVI.  eVPN itself does not learn from DHCP, so until
+located anywhere in the EVPN network without the DHCP messages
+  being blocked by SAVI.  EVPN itself does not learn from DHCP, so until
  the address is assigned, DAD completed and the host
-  have sent an NA (response to a lookup or unsolicited NA), eVPN does 
-not know about the assigned address. After the NA is sent,
-  the address can be learnt by eVPN, stored locally by the eVPN proxy-ND
- and distributed by BGP per <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+  have sent an NA (response to a lookup or unsolicited NA), EVPN is not 
+aware of the assigned address. After the NA is sent,
+  the address can be learnt by EVPN, stored locally by the EVPN 
+proxy-ND, and distributed by BGP per <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 </section>
 </section>
 </div>
@@ -1628,14 +1637,14 @@ not know about the assigned address. After the NA is sent,
   According to <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>,
  any address, used as the source of a packet or showing up as a target 
 of a Neighbor
-  Solicit (NS) message (including a DAD NS) which is not locally known 
-and validated is treated as a TENTATIVE address and a
-  DAD NS (Duplicate Address Detection Neighbor Solicit) with this 
-address in the target field is originated by the SAVI device
-  and broadcasted to any validated or trusted port. A response received 
-implies a duplication and/or IP theft and on the contrary,
-  no response allow to progress the state of the address from TENTATIVE 
-to VALID.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+  Advertisement (NA) or a target of a DAD Neighbor Solicitation (NS), 
+which is not locally known and validated, is treated as
+  a TENTATIVE address and a DAD NS (Duplicate Address Detection Neighbor
+ Solicitation) message with this address in the target
+  field is originated by the SAVI device and broadcasted to any 
+validated or trusted port. A response received implies a
+  duplication and/or IP theft and on the contrary, no response allow to 
+progress the state of the address from TENTATIVE to VALID.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 </section>
 <section id="section-5.2">
         <h3 id="name-interactions-between-savi-f">
@@ -1650,35 +1659,40 @@ to VALID.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
           <li class="normal" id="section-5.2-2.2">During the validation 
 process for a Source, SAVI (ingress) originates a broadcast DAD, with 
 target set to  "Source"
-  and forward (model1) or signal (model2) it to eVPN which delivers it 
-to remote SAVI devices (over the wire or an API).
+  and forwards (model 1) or signals (model 2) it to EVPN, which delivers
+ it to remote SAVI devices (over the wire or an API).
   Only SAVI devices that have a local validated entry or a trusted 
 interface forward the DAD to enable the target to defend itself.<a href="#section-5.2-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.2-2.3">In case a response is sent by one of the DAD recipients, it is a broadcast NA (to "all-nodes"), processed by SAVI (egress).
-  The source is a SAVI validated source, and as such, delivered from (egress) SAVI to EVPN for delivery to all VTEPs and finally
-  to (ingress) SAVI to complete the validation process of the target "Source".<a href="#section-5.2-2.3" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.2-2.3">In case a response is 
+sent by one of the DAD recipients, it is a broadcast NA (to 
+"all-nodes"), processed by SAVI (egress).
+  The source is expected to be a SAVI validated source, and as such, 
+delivered from (egress) SAVI to EVPN for delivery to all VTEPs and 
+finally
+  to (ingress) SAVI to complete the validation process of the target 
+"Source".<a href="#section-5.2-2.3" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.2-2.4">The first NA sent by this Source triggers eVPN proxy learning and eVPN distribution to all VTEPs per  <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span><a href="#section-5.2-2.4" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.2-2.4">The first NA sent by this Source triggers EVPN proxy learning and EVPN distribution to all VTEPs per  <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-5.2-2.4" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-5.2-3"> The flow below show two sequences, A and B, with A
- where Host does not respond to DAD send by SAVI and B where host does 
-repond.
+<p id="section-5.2-3"> The flow below shows two sequences, A and B, with
+ A where Host does not respond to DAD sent by SAVI and B where host does
+ respond.
 Sequence goes like this for A:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <ol class="normal type-1" id="section-5.2-4" type="1" start="1">
-  <li id="section-5.2-4.1">data sourced with S is received on the ingress SAVI instance. An entry for S is created in TENTATIVE state<a href="#section-5.2-4.1" class="pilcrow">¶</a>
+  <li id="section-5.2-4.1">Data sourced with S is received on the ingress SAVI instance. An entry for S is created in TENTATIVE state.<a href="#section-5.2-4.1" class="pilcrow">¶</a>
 </li>
-          <li id="section-5.2-4.2">A DAD is build with target=S and broadcasted to all SAVI instances over the EVPN network<a href="#section-5.2-4.2" class="pilcrow">¶</a>
+          <li id="section-5.2-4.2">A DAD is built with target=S and broadcasted to all SAVI instances over the EVPN network.<a href="#section-5.2-4.2" class="pilcrow">¶</a>
 </li>
-          <li id="section-5.2-4.3"> Only instances that have the entry "VALID" or trusted ports forward the DAD<a href="#section-5.2-4.3" class="pilcrow">¶</a>
+          <li id="section-5.2-4.3"> Only instances that have the entry "S" in VALID state or trusted ports forward the DAD.<a href="#section-5.2-4.3" class="pilcrow">¶</a>
 </li>
         </ol>
 <p id="section-5.2-5">
-  In the absence of a response from HOST, entry state at the ingress SAVI progresses to VALID<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+  In the absence of a response from HOST, the state of the "S" entry at the ingress SAVI progresses to VALID.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
 <p id="section-5.2-6">For B, after step 3:<a href="#section-5.2-6" class="pilcrow">¶</a></p>
 <ol class="normal type-1" id="section-5.2-7" type="1" start="4">
-  <li id="section-5.2-7.1"> HOST responds to DAD with an NA<a href="#section-5.2-7.1" class="pilcrow">¶</a>
+  <li id="section-5.2-7.1"> HOST responds to DAD with an NA.<a href="#section-5.2-7.1" class="pilcrow">¶</a>
 </li>
         </ol>
 <p id="section-5.2-8">
@@ -1737,8 +1751,8 @@ Sequence goes like this for A:<a href="#section-5.2-3" class="pilcrow">¶</a></p
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-enhanced-savi-evpn-interact" class="section-name selfRef">Enhanced SAVI/EVPN interactions</a>
       </h2>
 <p id="section-6-1">
-  In model2 where SAVI is co-located with BGP and eVPN proxy table, upon starting the validation process for an address,
-  SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3)remote.<a href="#section-6-1" class="pilcrow">¶</a></p>
+  In model 2 where SAVI is co-located with BGP and EVPN proxy table, upon starting the validation process for an address,
+  SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3) remote.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">
   If the entry is local, this is an error as it is expected only VALID 
 entries should be learnt by EVPN ND proxy. The entry in the proxy
@@ -1746,22 +1760,22 @@ entries should be learnt by EVPN ND proxy. The entry in the proxy
 <p id="section-6-3">Other cases are described in the next sections<a href="#section-6-3" class="pilcrow">¶</a></p>
 <p id="section-6-4">
   As described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>,
- when validating source address which is not known to in the local SAVI 
-table, multicast
+ when validating a source address that is not known in the local SAVI 
+table, a multicast
   DAD NS message is sent to all remote SAVI instances to check for the 
 presence of this address on any of these instances.
   This process can be optimized by leveraging the content of EVPN / BGP 
 tables on VTEPs and "unicast-forward" the DAD to the known
-  address owner, if any.<a href="#section-6-4" class="pilcrow">¶</a></p>
+  address owner, if any, more in <span>[<a href="#RFC6085" class="cite xref">RFC6085</a>]</span>.<a href="#section-6-4" class="pilcrow">¶</a></p>
 <p id="section-6-5">
   Depending on the presence of the address in the BGP table and if present, whether the address is active or not,
   there are three possible scenarios as described below.<a href="#section-6-5" class="pilcrow">¶</a></p>
 <ol class="normal type-1" id="section-6-6" type="1" start="1">
-  <li id="section-6-6.1">Address not found in BGP/EVPN table<a href="#section-6-6.1" class="pilcrow">¶</a>
+  <li id="section-6-6.1">Address not found in BGP/EVPN table.<a href="#section-6-6.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-6-6.2">Address found in BGP/EVPN table, remote not active<a href="#section-6-6.2" class="pilcrow">¶</a>
+        <li id="section-6-6.2">Address found in BGP/EVPN table, remote not active.<a href="#section-6-6.2" class="pilcrow">¶</a>
 </li>
-        <li id="section-6-6.3">Address found in BGP/EVPN table, remote active<a href="#section-6-6.3" class="pilcrow">¶</a>
+        <li id="section-6-6.3">Address found in BGP/EVPN table, remote active.<a href="#section-6-6.3" class="pilcrow">¶</a>
 </li>
       </ol>
 <div id="not_found">
@@ -1797,8 +1811,8 @@ Sub-function" of <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>
   the steps as specified in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>
  to move the entry to VALID state. Once the entry is in VALID state, the
  traffic
-  forwarded from that address will be forwarded into EVPN network and 
-the IP address will be learned by the EVPN. This is shown in
+  received from that address will be forwarded into EVPN network and the
+ IP address will be learned by the EVPN. This is shown in
   <a href="#mobility" class="auto internal xref">Figure 4</a><a href="#section-6.2-2" class="pilcrow">¶</a></p>
 <p id="section-6.2-3">
   SAVI instance MAY signal the entry to EVPN as soon as it becomes VALID.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
@@ -1849,12 +1863,12 @@ This would be an example of host mobility use case.<a href="#section-6.2-4" clas
 <a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-address-found-in-bgp-evpn-ta" class="section-name selfRef">Address found in BGP/EVPN table, remote active</a>
         </h3>
 <p id="section-6.3-1">
-  As in previous section, local SAVI sends the multicast NS DAD to the known (by eVPN, as a remote entry) target but this time,
-  but this time,  the target responds with a multicast NA. The validation process will follow the steps as specified in
+  As in previous section, local SAVI sends the multicast NS DAD to the known (by EVPN, as a remote entry) target but this time,
+  the target responds with a multicast NA. The validation process will follow the steps as specified in
   <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span> and 
 move the entry to NO_BIND state. Any NA received on this local SAVI 
 instance from the validating
-  port will not be signalled to EVPN and will not be learnt by eVPN ND 
+  port will not be signalled to EVPN and will not be learnt by EVPN ND 
 proxy. This is a IP duplication / theft use case and should
   be signalled through logging or by triggering an alarm.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <p id="section-6.3-2">
@@ -1937,12 +1951,18 @@ proxy. This is a IP duplication / theft use case and should
 <dd class="break"></dd><dt id="RFC6620">[RFC6620]</dt>
       <dd>
 <span class="refAuthor">Nordmark, E.</span>, <span class="refAuthor">Bagnulo, M.</span>, and <span class="refAuthor">E. Levy-Abegnoli</span>, <span class="refTitle">"FCFS SAVI: First-Come, First-Served Source Address Validation Improvement for Locally Assigned IPv6 Addresses"</span>, <span class="seriesInfo">RFC 6620</span>, <span class="seriesInfo">DOI 10.17487/RFC6620</span>, <time datetime="2012-05" class="refDate">May 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6620">https://www.rfc-editor.org/info/rfc6620</a>&gt;</span>. </dd>
+<dd class="break"></dd><dt id="RFC6085">[RFC6085]</dt>
+      <dd>
+<span class="refAuthor">Gundavelli, S.</span>, <span class="refAuthor">Townsley, M.</span>, <span class="refAuthor">Troan, O.</span>, and <span class="refAuthor">W. Dec</span>, <span class="refTitle">"Address Mapping of IPv6 Multicast Packets on Ethernet"</span>, <span class="seriesInfo">RFC 6085</span>, <span class="seriesInfo">DOI 10.17487/RFC6085</span>, <time datetime="2011-01" class="refDate">January 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6085">https://www.rfc-editor.org/info/rfc6085</a>&gt;</span>. </dd>
 <dd class="break"></dd><dt id="RFC7513">[RFC7513]</dt>
       <dd>
 <span class="refAuthor">Bi, J.</span>, <span class="refAuthor">Wu, J.</span>, <span class="refAuthor">Yao, G.</span>, and <span class="refAuthor">F. Baker</span>, <span class="refTitle">"Source Address Validation Improvement (SAVI) Solution for DHCP"</span>, <span class="seriesInfo">RFC 7513</span>, <span class="seriesInfo">DOI 10.17487/RFC7513</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7513">https://www.rfc-editor.org/info/rfc7513</a>&gt;</span>. </dd>
 <dd class="break"></dd><dt id="RFC7432">[RFC7432]</dt>
       <dd>
 <span class="refAuthor">Sajassi, A., Ed.</span>, <span class="refAuthor">Aggarwal, R.</span>, <span class="refAuthor">Bitar, N.</span>, <span class="refAuthor">Isaac, A.</span>, <span class="refAuthor">Uttaro, J.</span>, <span class="refAuthor">Drake, J.</span>, and <span class="refAuthor">W. Henderickx</span>, <span class="refTitle">"BGP MPLS-Based Ethernet VPN"</span>, <span class="seriesInfo">RFC 7432</span>, <span class="seriesInfo">DOI 10.17487/RFC7432</span>, <time datetime="2015-02" class="refDate">February 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7432">https://www.rfc-editor.org/info/rfc7432</a>&gt;</span>. </dd>
+<dd class="break"></dd><dt id="RFC8200">[RFC8200]</dt>
+      <dd>
+<span class="refAuthor">Deering, S.</span> and <span class="refAuthor">R. Hinden</span>, <span class="refTitle">"Internet Protocol, Version 6 (IPv6) Specification"</span>, <span class="seriesInfo">STD 86</span>, <span class="seriesInfo">RFC 8200</span>, <span class="seriesInfo">DOI 10.17487/RFC8200</span>, <time datetime="2017-07" class="refDate">July 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8200">https://www.rfc-editor.org/info/rfc8200</a>&gt;</span>. </dd>
 <dd class="break"></dd><dt id="RFC9161">[RFC9161]</dt>
       <dd>
 <span class="refAuthor">Rabadan, J., Ed.</span>, <span class="refAuthor">Sathappan, S.</span>, <span class="refAuthor">Nagaraj, K.</span>, <span class="refAuthor">Hankins, G.</span>, and <span class="refAuthor">T. King</span>, <span class="refTitle">"Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Networks"</span>, <span class="seriesInfo">RFC 9161</span>, <span class="seriesInfo">DOI 10.17487/RFC9161</span>, <time datetime="2022-01" class="refDate">January 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9161">https://www.rfc-editor.org/info/rfc9161</a>&gt;</span>. </dd>
@@ -1969,9 +1989,9 @@ proxy. This is a IP duplication / theft use case and should
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Eric Levy-Abegnoli</span></div>
 <div dir="auto" class="left"><span class="org">Cisco Systems, Inc</span></div>
-<div dir="auto" class="left"><span class="street-address">Building D<br>45 Allee des Ormes - BP1200</span></div>
+<div dir="auto" class="left"><span class="street-address">Emerald Square, Batiment C<br>rue Evariste Galois</span></div>
 <div dir="auto" class="left">
-<span class="postal-code">06254</span> <span class="locality">Mougins - Sophia Antipolis</span>
+<span class="postal-code">06410</span> <span class="locality">BIOT - Sophia Antipolis</span>
 </div>
 <div dir="auto" class="left"><span class="country-name">France</span></div>
 <div class="tel">
@@ -1986,9 +2006,9 @@ proxy. This is a IP duplication / theft use case and should
 <address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Pascal Thubert</span></div>
 <div dir="auto" class="left"><span class="org">Cisco Systems, Inc</span></div>
-<div dir="auto" class="left"><span class="street-address">Building D<br>45 Allee des Ormes - BP1200</span></div>
+<div dir="auto" class="left"><span class="street-address">Emerald Square, Batiment C<br>rue Evariste Galois</span></div>
 <div dir="auto" class="left">
-<span class="postal-code">06254</span> <span class="locality">Mougins - Sophia Antipolis</span>
+<span class="postal-code">06410</span> <span class="locality">BIOT - Sophia Antipolis</span>
 </div>
 <div dir="auto" class="left"><span class="country-name">France</span></div>
 <div class="tel">
