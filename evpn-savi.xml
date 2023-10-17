@@ -103,8 +103,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   </t>
   <t>Assuming one would want to perform Source Address Validation in an EVPN network, two models can be deployed:</t>
   <ol>
-    <li>the SAVI function runs on SAVI switches external to PEs</li>
-    <li>the SAVI function is co-located with the PEs</li>
+    <li>the SAVI function runs on SAVI switches not integrated with PEs</li>
+    <li>the SAVI function is integrated with the PEs</li>
   </ol>
   <t> These two models are reviewed in <xref target='models'/>. Corresponding interactions between SAVI and EVPN are reviewed as
   well in this document.
@@ -173,15 +173,16 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   </figure>
 
   <t>
-    In model 2, the SAVI device and the PE/VTEP are colapsed into the same box. SAVI device is referenced as a "SAVI instance".
-    This model is presented in  <xref target='model2'/>.
+    In this model, the SAVI device and the PE/VTEP can also be colapsed into the same box. SAVI device is referenced as a "SAVI instance".
+    The injection happens over an API between SAVI instance and EVPN rather than over a physical wire. Furthermore, 
+    only validated sources are learnt per section 3.2 of <xref target="RFC9161"/>.
   </t>
 
   <t>
-    Model 2 is fundamentally the same as the model 1. SAVI instance acts as a Security wall between untrusted clients and
-    the VTEPs, and only allows validated sources to inject traffic beyond the VTEP. The injection happens over an API between
-    SAVI instance and EVPN rather than over a physical wire. Furthermore, only validated sources are learnt per section 3.2
-    of <xref target="RFC9161"/>.
+    In model 2, SAVI Instance is integrated with te EVPN PE/VTEP,  It is presented in  <xref target='model2'/>.
+    In this model it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP BGP tables 
+    to make SAVI validation process more efficient.  This is described in section  <xref target='enhanced'/>
+   
   </t>
 
   <figure anchor='model2'><name>Deployment model 2</name>
@@ -213,10 +214,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 
 	   ]]></artwork>
   </figure>
-<t>
-  In this model however, it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP BGP tables
-  to make SAVI validation process more efficient.  This is described in section  <xref target='enhanced'/>
-</t>
+
 <t>
   The next section review interactions between SAVI and EVPN for different type of addresses
 </t>
@@ -405,19 +403,19 @@ This would be an example of host mobility use case.
 +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
    |     + - - | - - - - - - -  |  - - +  +--- - --- - | --+    |
    |  src=IP   |                |             |    IP in VALID  |
-   +---------->+                |             |    state        |
-   |           |                |             |        |        |
+   +---------->|                |             |    state        |
+   |         IP: TENTATIVE      |             |        |        |
    |           | Lookup EVPN/BGP|             |        |        |
    |           | for IP         |             |        |        |
    |           +--------------->+             |        |        |
    |           | IP FOUND, MAC<>IP            |        |        |
-   |           <----------------+             |        |        |
+   |           |<---------------+             |        |        |
    |           |                |             |        |        |
    |           |        unicast NS DAD to MAC |        |        |
    |           +--------------------------------------> ------->|
-   |           |                |             |        |        |
-   |           |No response     |             |      No response
-   |           |entry moved to VALID          |        |
+   |      wait "TENT_LT"        |             |        |        |
+   |           |                |             |      No response
+   |         IP: VALID          |             |        |
    |           +                |             |        |
    | NA is allowed to reach EVPN|             |        |
    +--------------------------->+--------------------->
@@ -426,8 +424,20 @@ This would be an example of host mobility use case.
                                 +------------->
     ]]></artwork>
 </figure>
+<t>
+  Note than, by default, waiting "TENT_LT" (default is 500ms) before moving entry to VALID state will delay mobility by this amount of time.
+  Until validation is complete, traffic sourced from IP will be blocked. It is also expected that EVPN will start the mobility procedure only
+  at the end of the validation (after TENT_LT) process. This delay can however be improved in some cases.
+</t>
+<ul>
+  <li>If the MACs are the same on both locations, the EVPN MAC mobility procedure may start immediately after detection of the MAC at the new
+  location, and traffic from the IP can be allowed "optimistically", to the exception of ARP/ND/DHCP messages that could change the status-quo
+  (mac, dhcp lease, etc.) By doing so, traffic will resume to new location as soon as BGP has re-converged, and in case of an IP-theft,
+  mobility procedure and/or SAVI validation (whichever comes first) will re-establish the previous situation.</li>
+  <li>If the MAC bound to the IP is different from the one already known, the MAC will be advertised immediately, but not the IP which will
+  be delayed by TENT_LT. In this case, traffic from the IP or ARP/ND traffic announcing the MAC change should also be delayed</li>
+</ul>
 </section><!--"Address found in BGP/EVPN table, remote not active"-->
-
 <section anchor="active"> <name>Address found in BGP/EVPN table, remote active</name>
 <t>
   As in previous section, local SAVI sends the multicast NS DAD to the known (by EVPN, as a remote entry) target but this time,
