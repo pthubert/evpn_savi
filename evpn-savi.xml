@@ -95,11 +95,16 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
     sourced with it can be forwarded.
   </t>
   <t>
-    Another SAVI specification, <xref target="RFC7513"/>, describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 server. Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.
+    Another SAVI specification, <xref target="RFC7513"/>, describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 server.
+    Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.
   </t>
 <t>
-  Section 10 of <xref target="RFC7432">"BGP MPLS-Based Ethernet VPN"</xref>(EVPN) indicates that a Provider Edge (PE) router may learn IP addresses and advertise them to other PEs.
-  EVPN allows PEs to execute a proxy ARP/ND function that is further detailed in <xref target="RFC9161">"Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Network"</xref>. According to section 3.2 of <xref target="RFC9161"/>, IPv6 addresses should be learnt by snooping Neighbor Advertisements (NA), then advertised in an EVPN MAC/IP Advertisement route, and finally used on remote PEs to perform said proxy ARP/ND function.
+  Section 10 of <xref target="RFC7432">"BGP MPLS-Based Ethernet VPN"</xref>(EVPN) indicates that a Provider Edge (PE) router may learn IP
+  addresses and advertise them to other PEs.
+  EVPN allows PEs to execute a proxy ARP/ND function that is further detailed in <xref target="RFC9161">"Operational Aspects of Proxy ARP/ND
+  in Ethernet Virtual Private Network"</xref>. According to section 3.2 of <xref target="RFC9161"/>, IPv6 addresses should be learnt by
+  snooping Neighbor Advertisements (NA), then advertised in an EVPN MAC/IP Advertisement route, and finally used on remote PEs to
+  perform said proxy ARP/ND function.
   </t>
   <t>Assuming one would want to perform Source Address Validation in an EVPN network, two models can be deployed:</t>
   <ol>
@@ -127,8 +132,116 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
       <dt>EVPN:</dt><dd>Ethernet Virtual Private Network </dd>
       <dt>VTEP:</dt><dd>VXLAN Tunnel EndPoint (node)</dd>
       <dt>BGP:</dt><dd>Border Gateway Protocol </dd>
+      <dt>SAVI-PE:</dt><dd>A PE that integrates SAVI functionality </dd>
     </dl>
 </section><!-- Acronyms -->
+
+<section anchor='savi' > <name>SAVI background</name>
+<t>
+  As specified in the <xref target="RFC7039"/> SAVI instance enforces the hosts' use of legitimate IP source addresses and
+  to verify that the source address used in data packets actually belongs to the originator of the packet following three-step model:
+</t>
+<ol>
+  <li>Identify which IP source addresses are legitimate for a host, based on monitoring packets exchanged by the host.</li>
+  <li>Bind a legitimate IP address to the host's "binding anchor" which must be verifiable in every packet that the host sends.</li> 
+  <li>Enforce that the IP source addresses in packets match the binding anchors to which they were bound.</li>
+</ol>
+<t>
+  SAVI devices form a perimeter separating trusted and untrusted regions of a network.  As specified in <xref target="RFC6620"/> and
+  <xref target="RFC7513"/>, only validated addresses can inject traffic over the trusted perimeter.
+</t>
+<figure anchor='savi-net'><name>SAVI network</name>
+  <artwork><![CDATA[
+                             protection perimeter
+          +- - - - - - - - - - - - - - - - - - - - - - -+
+          |                                             |
+          |                trusted perimeter            |
+          |    +- - - - - - - - - - - - - - - - - +     |
+          |    |                                  |     |
+          |    |                                  |     |
++-------+ | +--+---+                           +--+---+ | +-------+
+|       | | | SAVI |                           | SAVI | | |       |
+|Client | | |      |     L2-Network            |      | | |Client |
+|       | | |device|                           |device| | |       |
++-------+ | +--+---+                           +--+---+ | +-------+
+          |    |                                  |     |
+          |    +- - - - - - - - - - - - - - - - - +     |
+          |                                             |
+          +- - - - - - - - - - - - - - - - - - - - - - -+
+
+]]></artwork>
+</figure>
+<t>
+  According to <xref target="RFC6620"/>, any address, used as the source of a packet or showing up as a target of a Neighbor Advertisement (NA)
+  or a target of a DAD Neighbor Solicitation (NS), which is not locally known and validated, is treated as a TENTATIVE address. 
+
+  Validation process is initiated with a DAD NS (Duplicate Address Detection Neighbor Solicitation) message with this address
+  in the target field originated by the SAVI device and broadcasted to any validated or trusted port.  
+
+  A response received implies a duplication and/or IP theft [B] and on the contrary, no response allows to progress
+  the state of the address from TENTATIVE to VALID [A].
+</t>
+
+<figure anchor='savi-flow'><name>SAVI flow</name>
+<artwork><![CDATA[
+
+ +-------+       +---------+             +---------+         +-------+
+ |Client1|       | SAVI1   |             | SAVI2   |         |Client2|
+ |       |       |         |             |         |         |       |
+ +-----+-+       +---------+             +---------+         +--+----+
+       |               |                       |                |
+       |               |                       |                |
+  (*)  |data, src=IP   |                       |IP: VALID       |
+       +-------------->|IP not found           |                |
+       |               |                       |                |
+       |   IP:TENTATIVE|                       |                |
+       |               |                       |                |
+       |               | l2-multicast DAD NS   |                |
+       |               | target=IP             |                |
+ +-    |               +---------------------->|DAD NS          |
+ |     |               |                       +--------------->|
+ A     |      wait TENT_LT                     |                |
+ |     |               |                       |                |
+ |     |               |                       |                |
+ |     |      IP: VALID|                       |IP: NO_BIND     |
+ +-    |               |                       |                |
+ 
+                           DAD NS
+ +-    |               +---------------------->|DAD NS          |
+ |     |               |        NA, target=IP  +--------------->|
+ B     |               |<---------------------------------------|
+ |     |               |                       |                |
+ |     |               |                       |                |
+ |     |      IP: NO_BIND                      |IP: VALID       |
+ +-    |      Theft logging                    |                |
+
+(*) Any packet, including a DAD. For DAD and NA, src is found in target field 
+]]></artwork>
+</figure>
+<t>
+  Note that a SAVI device stores only local entries (client facing)
+</t>
+<t>
+  Sequence goes like this for A:
+</t>
+<ol>
+  <li>Data sourced with S is received on the ingress SAVI instance.  An entry for S is created in TENTATIVE state.</li>
+  <li>A DAD is built with target=S and broadcasted to all SAVI instances.</li>
+  <li>Only instances that have the entry "S" in VALID state or trusted ports forward the DAD.</li>
+  <li>In the absence of a response from Client, the state of the "S" entry at the ingress SAVI progresses to VALID.</li>
+</ol>
+
+<t>
+  For B, after step 3 Client responds to DAD with an NA (dst=all nodes).
+</t>
+<ol start="5">
+  <li>Upon receiving the NA, the ingress SAVI instance move the entry to NO_BIND and does not allow traffic from this source to be forwarded.</li>
+</ol>
+<t>
+  As described in step 3, only instances that have the entry "S" in VALID state or trusted ports forward the DAD.
+</t>
+
+</section> <!--savi-->
 
 <section anchor="models"> <name>Deployment models</name>
   <t>
@@ -173,7 +286,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   </figure>
 
   <t>
-    In this model, the SAVI device and the PE/VTEP can also be colapsed into the same box. SAVI device is referenced as a "SAVI instance".
+    In this model, the SAVI device and the PE/VTEP can also be colapsed into the same box referenced as a SAVI-PE.
     The injection happens over an API between SAVI instance and EVPN rather than over a physical wire. Furthermore, 
     only validated sources are learnt per section 3.2 of <xref target="RFC9161"/>.
   </t>
@@ -181,8 +294,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <t>
     In model 2, SAVI Instance is integrated with te EVPN PE/VTEP,  It is presented in  <xref target='model2'/>.
     In this model it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP BGP tables 
-    to make SAVI validation process more efficient.  This is described in section  <xref target='enhanced'/>
-   
+    to make SAVI validation process more efficient.
   </t>
 
   <figure anchor='model2'><name>Deployment model 2</name>
@@ -195,10 +307,10 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
           |            +- - - -- - - - - - -+            |
           |            |                    |            |
           |            |    L3 NETWORK      |            |
-          |    VTEP/PE |                    | VTEP/PE    |
+          |    SAVI-PE |                    | SAVI-PE    |
 +-------+ | +--------+-+------+      +------+-+--------+ | +-------+
 |       | | |SAVI    |        |      |        | SAVI   | | |       |
-|HOST/CE| | |       API  EVPN |      | EVPN  API       | | |HOST/CE|
+|HOST/CE| | |        |  EVPN  |      | EVPN   |        | | |HOST/CE|
 |       | | |instance|        |      |        |instance| | |       |
 +-------+ | +--------+-+------+      +------+-+--------+ | +-------+
           |            |                    |            |
@@ -233,7 +345,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   During DHCP Snooping process and according to associated state machine, an IP entry freshly snooped on a SAVI device progresses
   from NO_BIND to BOUND.
 </t>
-  </section><!--DHCP SAVI background -->
+</section><!--DHCP SAVI background -->
 <section> <name> Interactions between RFC7513 and EVPN </name>
 <t>
   The whole DHCP address assignment procedure is performed using IPv6 Link-Local addresses, which are expected to be VALID prior to
@@ -242,8 +354,12 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   have sent an NA (response to a lookup or unsolicited NA), EVPN is not aware of the assigned address. After the NA is sent,
   the address can be learnt by EVPN, stored locally by the EVPN proxy-ND, and distributed by BGP per <xref target="RFC9161"/>.
 </t>
-</section><!--"DHCP assigned addresses -->
+<t>
+  Source validation of DHCP assigned addresses in EVPN is described in 
+  <xref target="I-D.sajassi-bess-evpn-first-hop-security">"EVPN First Hop Security"</xref>
+</t>
 </section><!--"Interactions between SAVI/RFC7513 and EVPN" -->
+</section><!--"DHCP assigned addresses -->
 
 <section anchor="slaac"> <name>SLAAC and other IPv6 addresses</name>
 <section> <name> SAVI-FCFS background </name>
@@ -272,71 +388,6 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   <li>The first NA sent by this Source triggers EVPN proxy learning and EVPN distribution to all VTEPs per  <xref target="RFC9161"/>.</li>
 </ul>
 
-<t> The flow below shows two sequences, A and B, with A where Host does not respond to DAD sent by SAVI and B where host does respond.
-Sequence goes like this for A:
-</t>
-<ol>
-  <li>Data sourced with S is received on the ingress SAVI instance. An entry for S is created in TENTATIVE state.</li>
-  <li>A DAD is built with target=S and broadcasted to all SAVI instances over the EVPN network.</li>
-  <li> Only instances that have the entry "S" in VALID state or trusted ports forward the DAD.</li>
-</ol>
-<t>
-  In the absence of a response from HOST, the state of the "S" entry at the ingress SAVI progresses to VALID.
-</t>
-<t>For B, after step 3:
-</t>
-<ol start="4">
-  <li> HOST responds to DAD with an NA.</li>
-</ol>
-<t>
-  Upon receiving the NA, the ingress SAVI instance move the entry to NO_BIND and does not allow traffic from this source to
-  be forwarded.
-</t>
-
-<figure anchor='fcfs_savi'><name>FCFS-SAVI</name>
-<artwork><![CDATA[
-                               layer3 network
-                             +-----------+
-                VTEP         |           |      VTEP
-+------+      +--------+-----+--+      +-+------+--------+  +-------+
-|      |      |        |        |      |        |        |  |       |
-| HOST |      |  SAVI  |   EVPN |      | EVPN   |  SAVI  |  |HOST   |
-|      |      |        |        |      |        |        |  |       |
-+----+-+      +----+---+---+-+--+      +-+--+---+---+----+  +---+---+
-     |             |       | |           |  |       |           |
-     |             |       | +-----------+  |       |           |
-    (1)data, src=S |       |                |      S in VALID   |
-     +------------>|       |                |      state        |
-     |             |       |                |       |           |
-     |        S: TENTATIVE |                |       |           |
-     |             |       |(2)DAD NS, target=S     |           |
-     |     +-      +-------+---------------+------->|(3)DAD NS  |
-     |     |       |       |               |        +---------->|
-     |     |     timeout   |               |        |           |
-     |     |       |       |               |        |           |
-     | A   |       |       |               |        |           |
-     |     |  S: VALID     |               |        |           |
-     |     |       |       |               |        |           |
-     |     |       |       |               |        |           |
-     |     +-      |       |               |        |           |
-     |             |       |(2)DAD NS, target=S     |           |
-     |     +-      +-------+---------------+------->|(3)DAD NS  |
-     |     |       |       |               |        +---------->|
-     |     |       |       |(4)NA to all_nodes(4)   |           |
-     | B   |       |<------+---------------+--------+-----------+
-     |     |       |       |               |        |           |
-     |     |  S: NO_BIND   |               |        |           |
-     |     +-      |       |               |        |           |
-     |             |       |               |        |           |
-     |             |       |               |        |           |
-
-     ]]></artwork>
-</figure>
-
-</section><!--"Interactions between SAVI-FCFS and EVPN"-->
-</section><!--"SLAAC addresses"-->
-
-<section anchor="enhanced"> <name>Enhanced SAVI/EVPN interactions</name>
 <t>
   In model 2 where SAVI is co-located with BGP and EVPN proxy table, upon starting the validation process for an address,
   SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3) remote.
@@ -370,6 +421,12 @@ Sequence goes like this for A:
   be forwarded over the EVPN network and the SAVI entry MAY move directly to VALID state.
 </t>
 <t>
+  In some cases, sending a multicast DAD NS message to all remote SAVI instances to check for the presence of this address on any of
+  these instances (as specified in RFC6620 ) may still be required even if the entry is not found in BGP / EVPN table. For instance,
+  link-local addresses might not be distributed in BGP (by policy) so such entries cannot be moved to VALID state directly without performing
+  validation as per RFC6620.
+</t>
+<t>
   Note that to prevent race condition where a host is VALID in the local SAVI instance but not yet present in the EVPN proxy table, SAVI
   MAY signal the entry to EVPN as soon as it becomes VALID.
 </t>
@@ -390,53 +447,76 @@ Sequence goes like this for A:
   SAVI instance MAY signal the entry to EVPN as soon as it becomes VALID.
 </t>
 <t>
-This would be an example of host mobility use case.
+  Note than, by default, waiting "TENT_LT" (TIMEOUT is TENTATIVE lifetime - default is 500ms) before moving entry to VALID state
+  will delay mobility by this amount of time.
+</t>
+<t>
+  Until validation is complete, traffic sourced from IP will be blocked. It is also expected that EVPN will start the mobility
+  procedure only at the end of the validation (after TENT_LT) process. This delay can however be improved in some cases.
+</t>
+<t>
+  If the MACs (bound to IP) are the same on both locations, the EVPN MAC mobility procedure may start immediately after detection
+  of the MAC at the new location, and traffic from the IP can be allowed "optimistically", to the exception of ARP/ND/DHCP messages
+  that could change the status-quo (mac, dhcp lease, etc.). See case 1 in the figure below.  This is sometimes referred to as “loose mode”
+  as opposed to “strict mode” (nothing allowed till validation is complete).
+</t>
+<t>
+  By doing so, traffic will resume to new location as soon as BGP has re-converged, and in case of an IP-theft, mobility procedure
+  and/or SAVI validation (whichever completes first) will re-establish the previous situation (case 2 in the figure below).
+</t>
+<t>
+  If the MAC bound to the IP is different from the one already known, the MAC will be advertised immediately, but not the IP which
+  will be delayed by TENT_LT. In this case, traffic from the IP or ARP/ND traffic announcing the MAC change should also be delayed.
 </t>
 <figure anchor='mobility'><name>Remote not responding - Mobility</name>
 <artwork><![CDATA[
 
-                     local VTEP                  remote VTEP
-         + - - - - -  - -  - - - - - - +  +--- - - - - - - +
-+------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
-|      | | | local   |     |         | |  | |     | |    | | |      |
-|Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
-+------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
-   |     + - - | - - - - - - -  |  - - +  +--- - --- - | --+    |
-   |  src=IP   |                |             |    IP in VALID  |
-   +---------->|                |             |    state        |
-   |         IP: TENTATIVE      |             |        |        |
-   |           | Lookup EVPN/BGP|             |        |        |
-   |           | for IP         |             |        |        |
-   |           +--------------->+             |        |        |
-   |           | IP FOUND, MAC<>IP            |        |        |
-   |           |<---------------+             |        |        |
-   |           |                |             |        |        |
-   |           |        unicast NS DAD to MAC |        |        |
-   |           +--------------------------------------> ------->|
-   |      wait "TENT_LT"        |             |        |        |
-   |           |                |             |      No response
-   |         IP: VALID          |             |        |
-   |           +                |             |        |
-   | NA is allowed to reach EVPN|             |        |
-   +--------------------------->+--------------------->
-   +                            | IP learned  |   IP in NO_BIND
-   |                            | in BGP      |   state
-                                +------------->
-    ]]></artwork>
+                 local PE             Remote PE
++------+       +---------+             +---------+         +------+
+| HOST |       | SAVI-PE |             | SAVI-PE |         | HOST |
+|      |       |         |             |         |         |      |
++----+-+       +---------+             +---------+         +--+---+
+     |               |                       |                |
+     |               |                       |                |
+    (1)data, src=IP  |                       |IP: VALID       |
+     +-------------->|IP:REMOTE      IP:LOCAL|                |
+     |               |                       |                |
+     |   IP:TENTATIVE|                       |                |
+     |               |                       |                |
+     |     IP:REMOTE |                       |                |
+     |     found in  |                       |                |
+     |     EVPN table|                       |                |
+     |               |                       |                |
+     |               |  (2)l2-unicast DAD NS |                |
+     |               |     target=IP         |                |
+     |               +---------------------->|(3)DAD NS       |
+     |               |                       +--------------->|
+     |      wait TENT_LT                     |                |
+     |               |                       |                |
+     |               |                       |                |
+     |      IP: VALID|                       |                |
+     |               |                       |                |
+     |               | IP: LOCAL             |IP:NO_BIND      |
+     |               | in EVPN table         |                |
+     |               |                       |                |
+     |               +--IP BGP advertized->  |                |
+     |               |              IP:REMOTE|                |
+ 
+
+]]></artwork>
 </figure>
 <t>
-  Note than, by default, waiting "TENT_LT" (default is 500ms) before moving entry to VALID state will delay mobility by this amount of time.
-  Until validation is complete, traffic sourced from IP will be blocked. It is also expected that EVPN will start the mobility procedure only
-  at the end of the validation (after TENT_LT) process. This delay can however be improved in some cases.
+  It is important to note that EVPN table is simply a “helper” for SAVI verification. It may happen that the entry is not
+  present in the EVPN table, either because of a race condition (BGP did not converge yet for that entry), or because EVPN
+  decided not to distribute it (that may be the case for IPv6 Link-Local addresses on some implementations). If the entry
+  is not present in the EVPN table and not present in the SAVI table, it will still be created as TENTATIVE in SAVI, and
+  the verification will fallback on sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.
 </t>
-<ul>
-  <li>If the MACs are the same on both locations, the EVPN MAC mobility procedure may start immediately after detection of the MAC at the new
-  location, and traffic from the IP can be allowed "optimistically", to the exception of ARP/ND/DHCP messages that could change the status-quo
-  (mac, dhcp lease, etc.) By doing so, traffic will resume to new location as soon as BGP has re-converged, and in case of an IP-theft,
-  mobility procedure and/or SAVI validation (whichever comes first) will re-establish the previous situation.</li>
-  <li>If the MAC bound to the IP is different from the one already known, the MAC will be advertised immediately, but not the IP which will
-  be delayed by TENT_LT. In this case, traffic from the IP or ARP/ND traffic announcing the MAC change should also be delayed</li>
-</ul>
+<t>
+  Similarly, in the case the EVPN lookup for the IP returns a local entry, SAVI will also fallback on broadcasting the
+  DAD NS used for verification to all remote SAVI-PEs. This may happen if EVPN installs the entry for IP before SAVI
+  get a chance to initiate the verification process, which could be the case in “loose-mode”.
+</t>
 </section><!--"Address found in BGP/EVPN table, remote not active"-->
 <section anchor="active"> <name>Address found in BGP/EVPN table, remote active</name>
 <t>
@@ -451,41 +531,46 @@ This would be an example of host mobility use case.
 </t>
 <figure anchor='theft'><name>Remote active - IP theft</name>
 <artwork><![CDATA[
-
-                    local VTEP                  remote VTEP
-         + - - - - -  - -  - - - - - - +  +--- - - - - - - +
-+------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
-|      | | | local   |     |         | |  | |     | |    | | |      |
-|Client| | | SAVI    |<API>|  EVPN   | |  | |EVPN | |SAVI| | |Client|
-+------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
-   |     + - - | - - - - - - -  |  - - +  +--- - --- - |  -+    |
-   |  src=IP   |                |             |    IP in VALID  |
-   +---------->+                |             |    state        |
-   |           |                |             |        |        |
-   |           | Lookup EVPN/BGP|             |        |        |
-   |           | for IP         |             |        |        |
-   |           +--------------->+             |        |        |
-   |           | IP FOUND, MAC<>IP            |        |        |
-   |           <----------------+             |        |        |
-   |           |                |             |        |        |
-   |           |        unicast NS DAD to MAC |        |        |
-   |           +--------------------------------------> ------> |
-   |           |                |             |        |    NA  |
-   |           |                |             | allowed|<-------|
-   |           |<--------------------------------------|        |
-   |  Entry in NO_BIND state    |             |        |        |
-   |           |                |             |        |        |
-   | NA, target=IP              |             |        |        |
-   |---------->|                |             |        |        |
-   |  Traffic from src/target IP|             |        |        |
-   |  is DROPPED and not visible|             |        |        |
-   |   to EVPN/BGP              |             |        |        |
+                 local PE             Remote PE
++------+       +---------+             +---------+         +------+
+| HOST |       | SAVI-PE |             | SAVI-PE |         | HOST |
+|      |       |         |             |         |         |      |
++----+-+       +-----+---+             +-----+---+         +--+---+
+     |               |                       |                |
+     |               |                       |                |
+     | src=IP        |                       |IP: VALID       |
+     +-------------->|IP:REMOTE      IP:LOCAL|                |
+     |               |                       |                |
+     |   IP:TENTATIVE|                       |                |
+     |               |                       |                |
+     |     IP:REMOTE |                       |                |
+     |     found in  |                       |                |
+     |     EVPN table|                       |                |
+     |               |                       |                |
+     |               |  (2)l2-unicast DAD NS |                |
+     |               |     target=IP         |                |
+     |               +---------------------->|(3)DAD NS       |
+     |               |                       +--------------->|
+     |               |                       |            NA  |
+     |               |                       |<---------------|
+     |               |<----------------------| allowed        |
+     |    IP:NO_BIND |                       |                |
+     |    Theft signalled                    |                |
 
 ]]></artwork>
 </figure>
 </section><!--"Address found in BGP/EVPN table, remote active"-->
 
-</section><!--"Enhanced SAVI/EVPN interaction"-->
+</section><!--"SAVI/EVPN interaction"-->
+<section anchor='ipv4'> <name>IPv4 address considerations</name>
+<t>
+  While <xref target="RFC6620"/> does not mention IPv4, a very similar mechanism as the one described for
+  IPv6 addresses could be used for IPv4. NS DAD is simply replaced by ARP ACD (Address Conflict Detection) as
+  specified in <xref target="RFC5227"/> in all previous diagrams.
+</t>
+</section><!--IPv4 considerations -->
+
+</section><!--"SLAAC"-->
 
 
 <section  anchor='sec' > <name>Security Considerations</name>
@@ -510,14 +595,15 @@ This would be an example of host mobility use case.
 
    <references > <name>Normative References</name>
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml'/> <!-- neighbor Discovery for IP version 6 (IPv6) -->
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5227.xml'/> <!-- IPv4 Address Conflict Detection -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6620.xml'/> <!-- FCFS SAVI: First-Come, First-Served Source -->
-      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6085.xml'/> <!-- F
-         Address Mapping of IPv6 Multicast Packets on Ethernet -->
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6085.xml'/> <!-- Address Mapping of IPv6 Multicast Packets on Ethernet -->
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7039.xml'/> <!-- (SAVI) Framework -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7513.xml'/> <!-- (SAVI) Solution for DHCP -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7432.xml'/> <!-- BGP MPLS-Based Ethernet VPN -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8200.xml'/> <!-- IPv6-->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9161.xml'/> <!-- Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Networks -->
-
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.sajassi-bess-evpn-first-hop-security.xml'/> <!-- EVPN FHS-->
    </references>
    <references > <name>Informative References</name>
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4291.xml'/> <!-- IP Version 6 Addressing Architecture -->
