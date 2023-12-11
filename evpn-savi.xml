@@ -403,19 +403,19 @@ This would be an example of host mobility use case.
 +------+ | +---------+     +---------+ |  | +-----+ +----+ | +------+
    |     + - - | - - - - - - -  |  - - +  +--- - --- - | --+    |
    |  src=IP   |                |             |    IP in VALID  |
-   +---------->+                |             |    state        |
-   |           |                |             |        |        |
+   +---------->|                |             |    state        |
+   |         IP: TENTATIVE      |             |        |        |
    |           | Lookup EVPN/BGP|             |        |        |
    |           | for IP         |             |        |        |
    |           +--------------->+             |        |        |
    |           | IP FOUND, MAC<>IP            |        |        |
-   |           <----------------+             |        |        |
+   |           |<---------------+             |        |        |
    |           |                |             |        |        |
    |           |        unicast NS DAD to MAC |        |        |
    |           +--------------------------------------> ------->|
-   |           |                |             |        |        |
-   |           |No response     |             |      No response
-   |           |entry moved to VALID          |        |
+   |      wait "TENT_LT"        |             |        |        |
+   |           |                |             |      No response
+   |         IP: VALID          |             |        |
    |           +                |             |        |
    | NA is allowed to reach EVPN|             |        |
    +--------------------------->+--------------------->
@@ -424,14 +424,20 @@ This would be an example of host mobility use case.
                                 +------------->
     ]]></artwork>
 </figure>
+<t>
+  Note than, by default, waiting "TENT_LT" (default is 500ms) before moving entry to VALID state will delay mobility by this amount of time.
+  Until validation is complete, traffic sourced from IP will be blocked. It is also expected that EVPN will start the mobility procedure only
+  at the end of the validation (after TENT_LT) process. This delay can however be improved in some cases.
+</t>
+<ul>
+  <li>If the MACs are the same on both locations, the EVPN MAC mobility procedure may start immediately after detection of the MAC at the new
+  location, and traffic from the IP can be allowed "optimistically", to the exception of ARP/ND/DHCP messages that could change the status-quo
+  (mac, dhcp lease, etc.) By doing so, traffic will resume to new location as soon as BGP has re-converged, and in case of an IP-theft,
+  mobility procedure and/or SAVI validation (whichever comes first) will re-establish the previous situation.</li>
+  <li>If the MAC bound to the IP is different from the one already known, the MAC will be advertised immediately, but not the IP which will
+  be delayed by TENT_LT. In this case, traffic from the IP or ARP/ND traffic announcing the MAC change should also be delayed</li>
+</ul>
 </section><!--"Address found in BGP/EVPN table, remote not active"-->
-Note that the wait on reposne from remote will introdce a delay in moving entry to VALID state and allowing traffic from 
-that source address into EVPN netowork. The default value for the wait time is 500ms as specified in <xref target="RFC6620"/>.
-The delay is optional and can be avoided using optimistic validation process. With this approach, the certain type of traffic 
-such as data traffic from that source address will be allowed without any delay and before SAVI validation is completed.
-Any control traffic from that source address which might be harmful to the network, such as NA messages that could 
-poison the cache of neighbour devices, will not be allowed until the validation process is completed. 
-
 <section anchor="active"> <name>Address found in BGP/EVPN table, remote active</name>
 <t>
   As in previous section, local SAVI sends the multicast NS DAD to the known (by EVPN, as a remote entry) target but this time,
