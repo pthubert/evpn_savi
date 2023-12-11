@@ -506,7 +506,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 ]]></artwork>
 </figure>
 <t>
-  It is important to note that EVPN table is simply a “helper” for SAVI verification. It may happen that the entry is not
+  It is important to note that Proxy ARP/ND table is simply a “helper” for SAVI verification. It may happen that the entry is not
   present in the EVPN table, either because of a race condition (BGP did not converge yet for that entry), or because EVPN
   decided not to distribute it (that may be the case for IPv6 Link-Local addresses on some implementations). If the entry
   is not present in the EVPN table and not present in the SAVI table, it will still be created as TENTATIVE in SAVI, and
