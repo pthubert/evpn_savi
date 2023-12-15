@@ -293,7 +293,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 
   <t>
     In model 2, SAVI Instance is integrated with te EVPN PE/VTEP,  It is presented in  <xref target='model2'/>.
-    In this model it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP BGP tables 
+    In this model it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP EVPN tables 
     to make SAVI validation process more efficient.
   </t>
 
@@ -389,52 +389,70 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 </ul>
 
 <t>
-  In model 2 where SAVI is co-located with BGP and EVPN proxy table, upon starting the validation process for an address,
-  SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3) remote.
+  In model 2 where SAVI is co-located with EVPN table, upon starting the validation process for an address,
+  SAVI MAY perform a lookup into EVPN table, where entry can be 1) not found, 2) local or 3) remote.
 </t>
 <t>
-  If the entry is local, this is an error as it is expected only VALID entries should be learnt by EVPN ND proxy. The entry in the proxy
+  If the entry is local, this is an error as it is expected only VALID entries should be learnt by EVPN ND proxy. The entry in the EVPN
   table MUST be deleted.
 </t>
 <t>Other cases are described in the next sections</t>
 <t>
   As described in <xref target="RFC6620"/>, when validating a source address that is not known in the local SAVI table, a multicast
   DAD NS message is sent to all remote SAVI instances to check for the presence of this address on any of these instances.
-  This process can be optimized by leveraging the content of EVPN / BGP tables on VTEPs and "unicast-forward" the DAD to the known
+  This process can be optimized by leveraging the content of EVPN tables on VTEPs and "unicast-forward" the DAD to the known
   address owner, if any, more in <xref target="RFC6085"/>.
 </t>
 <t>
-  Depending on the presence of the address in the BGP table and if present, whether the address is active or not,
+  Depending on the presence of the address in the EVPN table and if present, whether the address is active or not,
   there are three possible scenarios as described below.
 </t>
 <ol>
-  <li>Address not found in BGP/EVPN table.</li>
-  <li>Address found in BGP/EVPN table, remote not active.</li>
-  <li>Address found in BGP/EVPN table, remote active.</li>
+  <li>Address not found in EVPN table.</li>
+  <li>Address found in EVPN table, remote not active.</li>
+  <li>Address found in EVPN table, remote active.</li>
 </ol>
+
+<t>
+  It is important to note that EVPN table is simply a “helper” for SAVI verification. It may happen that the entry is not
+  present in the EVPN table due to following reasons:
+</t>
+<ul>
+  <li>Race condition (BGP did not converge yet for that entry).</li>
+  <li>EVPN decided not to distribute it (that may be the case for IPv6 Link-Local addresses on some implementations).</li>
+  <li>The entry has not been detected in the network yet.</li>
+</ul>
+<t>
+  If the entry is not present in the EVPN table and not present in the SAVI table, the verification will fallback on 
+  sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.
+</t>
+<t>
+  Similarly, in the case the EVPN lookup for the IP returns a local entry, SAVI will also fallback on broadcasting the DAD NS 
+  used for verification to all remote SAVI-PEs. This may happen if EVPN installs the entry for IP before SAVI get a chance to 
+  initiate the verification process, which could be the case in “loose-mode” described below.
+</t>
 
 <section anchor="not_found"> <name>Address not found</name>
 <t>
-  When the source address that is being validated by SAVI process is not present in the BGP / EVPN table, it means that is was
-  not learned on any of the remote VTEPs which indicates that none of the remote SAVI devices have the entry for that source address
-  in VALID state. Based on the validation process described in <xref target="RFC6620"/>, in such scenario the multicast NS DAD MAY NOT
-  be forwarded over the EVPN network and the SAVI entry MAY move directly to VALID state.
+  Since the source address that is being validated by SAVI process might not be present in the EVPN table for reasons described above, it means 
+  it cannot be moved to VALID state directly without performing validation as per <xref target="RFC6620"/>. It will be created as TENTATIVE in SAVI, 
+  and the verification will fallback on sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.
 </t>
 <t>
-  In some cases, sending a multicast DAD NS message to all remote SAVI instances to check for the presence of this address on any of
-  these instances (as specified in RFC6620 ) may still be required even if the entry is not found in BGP / EVPN table. For instance,
-  link-local addresses might not be distributed in BGP (by policy) so such entries cannot be moved to VALID state directly without performing
-  validation as per RFC6620.
+  In the case when entry is not present in the EVPN table due to race condition or entry is not distributed by the EVPN,
+  multicast NS DAD will be converted to unnicast on remote SAVI-PEs before forwarding to the target. In the case when entry is not 
+  detected in the network, multicast NS DAD will be stopped at remote SAVI-PEs.
 </t>
+
 <t>
-  Note that to prevent race condition where a host is VALID in the local SAVI instance but not yet present in the EVPN proxy table, SAVI
+  Note that to prevent race condition where a host is VALID in the local SAVI instance but not yet present in the EVPN table, SAVI
   MAY signal the entry to EVPN as soon as it becomes VALID.
 </t>
 </section><!--"Address not found"-->
 
-<section anchor="inactive"> <name>Address found in BGP/EVPN table, remote not active</name>
+<section anchor="inactive"> <name>Address found in EVPN table, remote not active</name>
 <t>
-  When the source address that is being validated by SAVI process is present in the BGP / EVPN table, then the multicast NS DAD sent
+  When the source address that is being validated by SAVI process is present in the EVPN table, then the multicast NS DAD sent
   by SAVI can be "unicast-forwarded" per section 3.4. "Unicast-Forward Sub-function" of <xref target="RFC9161"/>.
 </t>
 <t>
@@ -505,20 +523,9 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 
 ]]></artwork>
 </figure>
-<t>
-  It is important to note that Proxy ARP/ND table is simply a “helper” for SAVI verification. It may happen that the entry is not
-  present in the EVPN table, either because of a race condition (BGP did not converge yet for that entry), or because EVPN
-  decided not to distribute it (that may be the case for IPv6 Link-Local addresses on some implementations). If the entry
-  is not present in the EVPN table and not present in the SAVI table, it will still be created as TENTATIVE in SAVI, and
-  the verification will fallback on sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.
-</t>
-<t>
-  Similarly, in the case the EVPN lookup for the IP returns a local entry, SAVI will also fallback on broadcasting the
-  DAD NS used for verification to all remote SAVI-PEs. This may happen if EVPN installs the entry for IP before SAVI
-  get a chance to initiate the verification process, which could be the case in “loose-mode”.
-</t>
-</section><!--"Address found in BGP/EVPN table, remote not active"-->
-<section anchor="active"> <name>Address found in BGP/EVPN table, remote active</name>
+
+</section><!--"Address found in EVPN table, remote not active"-->
+<section anchor="active"> <name>Address found in EVPN table, remote active</name>
 <t>
   As in previous section, local SAVI sends the multicast NS DAD to the known (by EVPN, as a remote entry) target but this time,
   the target responds with a multicast NA. The validation process will follow the steps as specified in
@@ -559,7 +566,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 
 ]]></artwork>
 </figure>
-</section><!--"Address found in BGP/EVPN table, remote active"-->
+</section><!--"Address found in EVPN table, remote active"-->
 
 </section><!--"SAVI/EVPN interaction"-->
 <section anchor='ipv4'> <name>IPv4 address considerations</name>
@@ -569,7 +576,23 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   specified in <xref target="RFC5227"/> in all previous diagrams.
 </t>
 </section><!--IPv4 considerations -->
+<section anchor='savnet'> <name>Interaction with SAVNET considerations</name>
+<t>
+  The Source Address Validation Architecture (SAVA) <xref target="RFC5210"/> proposes a multi-fence approach
+  that implements SAV at three levels of the network: access, intra-domain, and inter-domain.
 
+  As described in <xref target="RFC6620"/> and <xref target="RFC7039"/> the applicability of FCFS SAVI is limited to the local traffic, i.e.,
+  to verify if the traffic generated by the hosts attached to the local link contains a valid source address.
+  The verification of the source address of the inter-subnet traffic is out of the scope of FCFS SAVI.
+
+  Other techniques are recommended to validate inter-subnet traffic. The scope of the Source Address Validation in Intra-domain
+  and Inter-domain Networks (SAVNET) includes the SAV function for both intra-domain and inter-domain networks. It identifies
+  the technical gaps and fundamental problems with current mechanism and techniques, and specifies the practical requirements
+  for the solution of these problems.
+
+  In that sense, FCFS SAVI complements SAVNET and the security level can be increased by combining these two techniques.
+</t>
+</section><!--Interaction with SAVNET considerations -->
 </section><!--"SLAAC"-->
 
 
