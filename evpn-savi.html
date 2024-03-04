@@ -11,39 +11,38 @@
 <meta content="
        
      Source Address Validation procedures have been specified in the SAVI Working Group and provide a set of mechanisms and state
-     machines to verify Source Address ownership. The main mechanisms are described in   and
-      .
+     machines to verify Source Address ownership. The main mechanisms are described in RFC6620 and RFC7513.
        
        
-       and furthermore   specify how an EVPN network could learn and distribute IP
-     addresses.    describes a mechanism by which the PE can proxy some ND messages based on this information.
+     RFC7432 and furthermore RFC9161 specify how an EVPN network could learn and distribute IP addressess.
+     RFC9161 describes a mechanism by which the PE can proxy some ND messages based on this information.
        
        
      In this document, we review how these two sets of specifications and underlying mechanisms can interact to provide Source
      Address Validation in an EVPN network.
        
     " name="description">
-<meta content="xml2rfc 3.18.1" name="generator">
+<meta content="xml2rfc 3.20.0" name="generator">
 <meta content="Draft" name="keyword">
-<meta content="draft-levyabegnoli-bess-EVPN-savi-00" name="ietf.draft">
+<meta content="draft-levyabegnoli-bess-evpn-savi-02" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.18.1
+  xml2rfc 3.20.0
     Python 3.10.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
-    Jinja2 3.1.2
-    lxml 4.9.3
-    platformdirs 3.10.0
-    pycountry 22.3.5
+    Jinja2 3.1.3
+    lxml 4.9.4
+    platformdirs 4.2.0
+    pycountry 23.12.11
     PyYAML 6.0.1
     requests 2.31.0
     setuptools 59.6.0
     six 1.16.0
-    wcwidth 0.2.7
-    weasyprint 60.1
+    wcwidth 0.2.13
+    weasyprint 61.0
 -->
-<link href="/usr/src/app/tmp/7d8b3917-88a5-4790-8cb7-24ca99f533bb/evpn-savi.xml" rel="alternate" type="application/rfc+xml">
+<link href="/usr/src/app/tmp/e90875d7-17a7-4889-8d20-3fc223d22db5/draft-levyabegnoli-bess-evpn-savi-02.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -267,8 +266,7 @@ a[href]:hover {
   background-color: #f2f2f2;
 }
 figcaption a[href],
-a[href].selfRef,
-.iref + a[href].internal {
+a[href].selfRef {
   color: #222;
 }
 /* XXX probably not this:
@@ -469,6 +467,10 @@ nav.toc li {
 }
 
 .refInstance {
+  margin-bottom: 1.25em;
+}
+
+.refSubseries {
   margin-bottom: 1.25em;
 }
 
@@ -1220,11 +1222,11 @@ li > p:last-of-type:only-child {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">SAVI in an EVPN network</td>
-<td class="right">October 2023</td>
+<td class="right">March 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Levy-Abegnoli, et al.</td>
-<td class="center">Expires 25 April 2024</td>
+<td class="center">Expires 5 September 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1235,12 +1237,12 @@ li > p:last-of-type:only-child {
 <dd class="workgroup">BESS</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-10-23" class="published">23 October 2023</time>
+<time datetime="2024-03-04" class="published">4 March 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-04-25">25 April 2024</time></dd>
+<dd class="expires"><time datetime="2024-09-05">5 September 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1263,14 +1265,22 @@ li > p:last-of-type:only-child {
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">
      Source Address Validation procedures have been specified in the SAVI Working Group and provide a set of mechanisms and state
-     machines to verify Source Address ownership. The main mechanisms are described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span> and
-     <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span>.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+     machines to verify Source Address ownership. The main mechanisms are described in RFC6620 and RFC7513.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">
-     <span>[<a href="#RFC7432" class="cite xref">RFC7432</a>]</span> and furthermore <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span> specify how an EVPN network could learn and distribute IP
-     addresses. <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>  describes a mechanism by which the PE can proxy some ND messages based on this information.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+     RFC7432 and furthermore RFC9161 specify how an EVPN network could learn and distribute IP addressess.
+     RFC9161 describes a mechanism by which the PE can proxy some ND messages based on this information.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 <p id="section-abstract-3">
      In this document, we review how these two sets of specifications and underlying mechanisms can interact to provide Source
      Address Validation in an EVPN network.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-requirements-language">
+<a href="#name-requirements-language" class="section-name selfRef">Requirements Language</a>
+      </h2>
+<p id="section-note.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+      NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+      "MAY", and "OPTIONAL" in this document are to be interpreted as
+      described in <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span>.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1291,7 +1301,7 @@ li > p:last-of-type:only-child {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 25 April 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1300,7 +1310,7 @@ li > p:last-of-type:only-child {
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2023 IETF Trust and the persons identified as the
+            Copyright (c) 2024 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1356,15 +1366,18 @@ li > p:last-of-type:only-child {
                     <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-address-not-found" class="internal xref">Address not found</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.2">
-                    <p id="section-toc.1-1.6.2.2.2.2.1"><a href="#section-6.2.2" class="auto internal xref">6.2.2</a>.  <a href="#name-address-found-in-bgp-evpn-t" class="internal xref">Address found in BGP/EVPN table, remote not active</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.2.1"><a href="#section-6.2.2" class="auto internal xref">6.2.2</a>.  <a href="#name-address-found-in-evpn-table" class="internal xref">Address found in EVPN table, remote not active</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.3">
-                    <p id="section-toc.1-1.6.2.2.2.3.1"><a href="#section-6.2.3" class="auto internal xref">6.2.3</a>.  <a href="#name-address-found-in-bgp-evpn-ta" class="internal xref">Address found in BGP/EVPN table, remote active</a></p>
+                    <p id="section-toc.1-1.6.2.2.2.3.1"><a href="#section-6.2.3" class="auto internal xref">6.2.3</a>.  <a href="#name-address-found-in-evpn-table-" class="internal xref">Address found in EVPN table, remote active</a></p>
 </li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
                 <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-ipv4-address-considerations" class="internal xref">IPv4 address considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.4">
+                <p id="section-toc.1-1.6.2.4.1"><a href="#section-6.4" class="auto internal xref">6.4</a>.  <a href="#name-interaction-with-savnet-con" class="internal xref">Interaction with SAVNET considerations</a></p>
 </li>
             </ul>
 </li>
@@ -1409,7 +1422,7 @@ li > p:last-of-type:only-child {
     Another SAVI specification, <span>[<a href="#RFC7513" class="cite xref">RFC7513</a>]</span>, describes a similar mechanism for addresses assigned by DHCPv6/DHCPv4 server.
     Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">
-  Section 10 of <span><a href="#RFC7432" class="internal xref">"BGP MPLS-Based Ethernet VPN"</a> [<a href="#RFC7432" class="cite xref">RFC7432</a>]</span>(EVPN) indicates that a Provider Edge (PE) router may learn IP
+  Section 10 of <span><a href="#RFC7432" class="internal xref">"BGP MPLS-Based Ethernet VPN"</a> [<a href="#RFC7432" class="cite xref">RFC7432</a>]</span> (EVPN) indicates that a Provider Edge (PE) router may learn IP
   addresses and advertise them to other PEs.
   EVPN allows PEs to execute a proxy ARP/ND function that is further detailed in <span><a href="#RFC9161" class="internal xref">"Operational Aspects of Proxy ARP/ND
   in Ethernet Virtual Private Network"</a> [<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>. According to section 3.2 of <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>, IPv6 addresses should be learnt by
@@ -1578,7 +1591,8 @@ li > p:last-of-type:only-child {
  |     |      IP: NO_BIND                      |IP: VALID       |
  +-    |      Theft logging                    |                |
 
-(*) Any packet, including a DAD. For DAD and NA, src is found in target field
+(*) Any packet, including a DAD. For DAD and NA, src is found in target
+field
 </pre>
 </div>
 <figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
@@ -1662,7 +1676,7 @@ li > p:last-of-type:only-child {
     only validated sources are learnt per section 3.2 of <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-4-4" class="pilcrow">¶</a></p>
 <p id="section-4-5">
     In model 2, SAVI Instance is integrated with te EVPN PE/VTEP,  It is presented in  <a href="#model2" class="auto internal xref">Figure 4</a>.
-    In this model it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP BGP tables 
+    In this model it is possible and even desirable to leverage the knowledge of remote IP entries stored in the VTEP EVPN tables 
     to make SAVI validation process more efficient.<a href="#section-4-5" class="pilcrow">¶</a></p>
 <span id="name-deployment-model-2"></span><div id="model2">
 <figure id="figure-4">
@@ -1764,67 +1778,83 @@ li > p:last-of-type:only-child {
 <li class="normal" id="section-6.2-2.1">Sources not validated by SAVI are not learnt nor distributed by EVPN: SAVI does not allow NA to be forwarded (model 1)
   or signaled (model 2) to EVPN.<a href="#section-6.2-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-6.2-2.2">During the validation process for a Source, SAVI (ingress) originates a broadcast DAD, with target set to  “Source”
+          <li class="normal" id="section-6.2-2.2">During the validation process for a Source, SAVI (ingress) originates a broadcast DAD, with target set to  "Source"
   and forwards (model 1) or signals (model 2) it to EVPN, which delivers it to remote SAVI devices (over the wire or an API).
   Only SAVI devices that have a local validated entry or a trusted interface forward the DAD to enable the target to defend itself.<a href="#section-6.2-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-6.2-2.3">In case a response is sent by one of the DAD recipients, it is a broadcast NA (to “all-nodes”), processed by SAVI (egress).
+          <li class="normal" id="section-6.2-2.3">In case a response is sent by one of the DAD recipients, it is a broadcast NA (to "all-nodes"), processed by SAVI (egress).
   The source is expected to be a SAVI validated source, and as such, delivered from (egress) SAVI to EVPN for delivery to all VTEPs and finally
-  to (ingress) SAVI to complete the validation process of the target “Source”.<a href="#section-6.2-2.3" class="pilcrow">¶</a>
+  to (ingress) SAVI to complete the validation process of the target "Source".<a href="#section-6.2-2.3" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-6.2-2.4">The first NA sent by this Source triggers EVPN proxy learning and EVPN distribution to all VTEPs per  <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-6.2-2.4" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-6.2-3">
-  In model 2 where SAVI is co-located with BGP and EVPN proxy table, upon starting the validation process for an address,
-  SAVI MAY perform a lookup into EVPN/BGP proxy table, where entry can be 1) not found, 2) local or 3) remote.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+  In model 2 where SAVI is co-located with EVPN table, upon starting the validation process for an address,
+  SAVI MAY perform a lookup into EVPN table, where entry can be 1) not found, 2) local or 3) remote.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
 <p id="section-6.2-4">
-  If the entry is local, this is an error as it is expected only VALID entries should be learnt by EVPN ND proxy. The entry in the proxy
+  If the entry is local, this is an error as it is expected only VALID entries should be learnt by EVPN ND proxy. The entry in the EVPN
   table MUST be deleted.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
 <p id="section-6.2-5">Other cases are described in the next sections<a href="#section-6.2-5" class="pilcrow">¶</a></p>
 <p id="section-6.2-6">
   As described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>, when validating a source address that is not known in the local SAVI table, a multicast
   DAD NS message is sent to all remote SAVI instances to check for the presence of this address on any of these instances.
-  This process can be optimized by leveraging the content of EVPN / BGP tables on VTEPs and "unicast-forward" the DAD to the known
+  This process can be optimized by leveraging the content of EVPN tables on VTEPs and "unicast-forward" the DAD to the known
   address owner, if any, more in <span>[<a href="#RFC6085" class="cite xref">RFC6085</a>]</span>.<a href="#section-6.2-6" class="pilcrow">¶</a></p>
 <p id="section-6.2-7">
-  Depending on the presence of the address in the BGP table and if present, whether the address is active or not,
+  Depending on the presence of the address in the EVPN table and if present, whether the address is active or not,
   there are three possible scenarios as described below.<a href="#section-6.2-7" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-6.2-8">
-  <li id="section-6.2-8.1">Address not found in BGP/EVPN table.<a href="#section-6.2-8.1" class="pilcrow">¶</a>
+  <li id="section-6.2-8.1">Address not found in EVPN table.<a href="#section-6.2-8.1" class="pilcrow">¶</a>
 </li>
-          <li id="section-6.2-8.2">Address found in BGP/EVPN table, remote not active.<a href="#section-6.2-8.2" class="pilcrow">¶</a>
+          <li id="section-6.2-8.2">Address found in EVPN table, remote not active.<a href="#section-6.2-8.2" class="pilcrow">¶</a>
 </li>
-          <li id="section-6.2-8.3">Address found in BGP/EVPN table, remote active.<a href="#section-6.2-8.3" class="pilcrow">¶</a>
+          <li id="section-6.2-8.3">Address found in EVPN table, remote active.<a href="#section-6.2-8.3" class="pilcrow">¶</a>
 </li>
         </ol>
+<p id="section-6.2-9">
+  It is important to note that EVPN table is simply a "helper" for SAVI verification. It may happen that the entry is not
+  present in the EVPN table due to following reasons:<a href="#section-6.2-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.2-10.1">Race condition (BGP did not converge yet for that entry).<a href="#section-6.2-10.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.2-10.2">EVPN decided not to distribute it (that may be the case for IPv6 Link-Local addresses on some implementations).<a href="#section-6.2-10.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.2-10.3">The entry has not been detected in the network yet.<a href="#section-6.2-10.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-6.2-11">
+  If the entry is not present in the EVPN table and not present in the SAVI table, the verification will fallback on 
+  sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.<a href="#section-6.2-11" class="pilcrow">¶</a></p>
+<p id="section-6.2-12">
+  Similarly, in the case the EVPN lookup for the IP returns a local entry, SAVI will also fallback on broadcasting the DAD NS 
+  used for verification to all remote SAVI-PEs. This may happen if EVPN installs the entry for IP before SAVI get a chance to 
+  initiate the verification process, which could be the case in "loose-mode" described below.<a href="#section-6.2-12" class="pilcrow">¶</a></p>
 <div id="not_found">
 <section id="section-6.2.1">
           <h4 id="name-address-not-found">
 <a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-address-not-found" class="section-name selfRef">Address not found</a>
           </h4>
 <p id="section-6.2.1-1">
-  When the source address that is being validated by SAVI process is not present in the BGP / EVPN table, it means that is was
-  not learned on any of the remote VTEPs which indicates that none of the remote SAVI devices have the entry for that source address
-  in VALID state. Based on the validation process described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>, in such scenario the multicast NS DAD MAY NOT
-  be forwarded over the EVPN network and the SAVI entry MAY move directly to VALID state.<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
+  Since the source address that is being validated by SAVI process might not be present in the EVPN table for reasons described above, it means 
+  it cannot be moved to VALID state directly without performing validation as per <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span>. It will be created as TENTATIVE in SAVI, 
+  and the verification will fallback on sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.<a href="#section-6.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.2.1-2">
-  In some cases, sending a multicast DAD NS message to all remote SAVI instances to check for the presence of this address on any of
-  these instances (as specified in RFC6620 ) may still be required even if the entry is not found in BGP / EVPN table. For instance,
-  link-local addresses might not be distributed in BGP (by policy) so such entries cannot be moved to VALID state directly without performing
-  validation as per RFC6620.<a href="#section-6.2.1-2" class="pilcrow">¶</a></p>
+  In the case when entry is not present in the EVPN table due to race condition or entry is not distributed by the EVPN,
+  multicast NS DAD will be converted to unnicast on remote SAVI-PEs before forwarding to the target. In the case when entry is not 
+  detected in the network, multicast NS DAD will be stopped at remote SAVI-PEs.<a href="#section-6.2.1-2" class="pilcrow">¶</a></p>
 <p id="section-6.2.1-3">
-  Note that to prevent race condition where a host is VALID in the local SAVI instance but not yet present in the EVPN proxy table, SAVI
+  Note that to prevent race condition where a host is VALID in the local SAVI instance but not yet present in the EVPN table, SAVI
   MAY signal the entry to EVPN as soon as it becomes VALID.<a href="#section-6.2.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="inactive">
 <section id="section-6.2.2">
-          <h4 id="name-address-found-in-bgp-evpn-t">
-<a href="#section-6.2.2" class="section-number selfRef">6.2.2. </a><a href="#name-address-found-in-bgp-evpn-t" class="section-name selfRef">Address found in BGP/EVPN table, remote not active</a>
+          <h4 id="name-address-found-in-evpn-table">
+<a href="#section-6.2.2" class="section-number selfRef">6.2.2. </a><a href="#name-address-found-in-evpn-table" class="section-name selfRef">Address found in EVPN table, remote not active</a>
           </h4>
 <p id="section-6.2.2-1">
-  When the source address that is being validated by SAVI process is present in the BGP / EVPN table, then the multicast NS DAD sent
+  When the source address that is being validated by SAVI process is present in the EVPN table, then the multicast NS DAD sent
   by SAVI can be "unicast-forwarded" per section 3.4. "Unicast-Forward Sub-function" of <span>[<a href="#RFC9161" class="cite xref">RFC9161</a>]</span>.<a href="#section-6.2.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.2.2-2">
   If the address is no longer active on the remote location, there will be no response and the validation process will follow
@@ -1842,8 +1872,8 @@ li > p:last-of-type:only-child {
 <p id="section-6.2.2-6">
   If the MACs (bound to IP) are the same on both locations, the EVPN MAC mobility procedure may start immediately after detection
   of the MAC at the new location, and traffic from the IP can be allowed "optimistically", to the exception of ARP/ND/DHCP messages
-  that could change the status-quo (mac, dhcp lease, etc.). See case 1 in the figure below.  This is sometimes referred to as “loose mode”
-  as opposed to “strict mode” (nothing allowed till validation is complete).<a href="#section-6.2.2-6" class="pilcrow">¶</a></p>
+  that could change the status-quo (mac, dhcp lease, etc.). See case 1 in the figure below.  This is sometimes referred to as "loose mode"
+  as opposed to "strict mode" (nothing allowed till validation is complete).<a href="#section-6.2.2-6" class="pilcrow">¶</a></p>
 <p id="section-6.2.2-7">
   By doing so, traffic will resume to new location as soon as BGP has re-converged, and in case of an IP-theft, mobility procedure
   and/or SAVI validation (whichever completes first) will re-establish the previous situation (case 2 in the figure below).<a href="#section-6.2.2-7" class="pilcrow">¶</a></p>
@@ -1893,22 +1923,12 @@ li > p:last-of-type:only-child {
 <a href="#name-remote-not-responding-mobil" class="selfRef">Remote not responding - Mobility</a>
             </figcaption></figure>
 </div>
-<p id="section-6.2.2-10">
-  It is important to note that EVPN table is simply a “helper” for SAVI verification. It may happen that the entry is not
-  present in the EVPN table, either because of a race condition (BGP did not converge yet for that entry), or because EVPN
-  decided not to distribute it (that may be the case for IPv6 Link-Local addresses on some implementations). If the entry
-  is not present in the EVPN table and not present in the SAVI table, it will still be created as TENTATIVE in SAVI, and
-  the verification will fallback on sending a multicast (l2-broadcast) packet to all remote SAVI-PEs.<a href="#section-6.2.2-10" class="pilcrow">¶</a></p>
-<p id="section-6.2.2-11">
-  Similarly, in the case the EVPN lookup for the IP returns a local entry, SAVI will also fallback on broadcasting the
-  DAD NS used for verification to all remote SAVI-PEs. This may happen if EVPN installs the entry for IP before SAVI
-  get a chance to initiate the verification process, which could be the case in “loose-mode”.<a href="#section-6.2.2-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="active">
 <section id="section-6.2.3">
-          <h4 id="name-address-found-in-bgp-evpn-ta">
-<a href="#section-6.2.3" class="section-number selfRef">6.2.3. </a><a href="#name-address-found-in-bgp-evpn-ta" class="section-name selfRef">Address found in BGP/EVPN table, remote active</a>
+          <h4 id="name-address-found-in-evpn-table-">
+<a href="#section-6.2.3" class="section-number selfRef">6.2.3. </a><a href="#name-address-found-in-evpn-table-" class="section-name selfRef">Address found in EVPN table, remote active</a>
           </h4>
 <p id="section-6.2.3-1">
   As in previous section, local SAVI sends the multicast NS DAD to the known (by EVPN, as a remote entry) target but this time,
@@ -1968,6 +1988,27 @@ li > p:last-of-type:only-child {
   specified in <span>[<a href="#RFC5227" class="cite xref">RFC5227</a>]</span> in all previous diagrams.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="savnet">
+<section id="section-6.4">
+        <h3 id="name-interaction-with-savnet-con">
+<a href="#section-6.4" class="section-number selfRef">6.4. </a><a href="#name-interaction-with-savnet-con" class="section-name selfRef">Interaction with SAVNET considerations</a>
+        </h3>
+<p id="section-6.4-1">
+  The Source Address Validation Architecture (SAVA) <span>[<a href="#RFC5210" class="cite xref">RFC5210</a>]</span> proposes a multi-fence approach
+  that implements SAV at three levels of the network: access, intra-domain, and inter-domain.
+
+  As described in <span>[<a href="#RFC6620" class="cite xref">RFC6620</a>]</span> and <span>[<a href="#RFC7039" class="cite xref">RFC7039</a>]</span> the applicability of FCFS SAVI is limited to local
+  traffic, to verify if the traffic generated by the hosts attached to the local link contains a valid source address.
+  The verification of the source address of the inter-subnet traffic is out of the scope of FCFS SAVI.
+
+  Other techniques are recommended to validate inter-subnet traffic. The scope of the Source Address Validation in Intra-domain
+  and Inter-domain Networks (SAVNET) includes the SAV function for both intra-domain and inter-domain networks. It identifies
+  the technical gaps and fundamental problems with current mechanism and techniques, and specifies the practical requirements
+  for the solution of these problems.
+
+  In that sense, FCFS SAVI complements SAVNET and the security level can be increased by combining these two techniques.<a href="#section-6.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="sec">
@@ -1999,9 +2040,15 @@ li > p:last-of-type:only-child {
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
-<dt id="RFC4861">[RFC4861]</dt>
+<dt id="RFC2119">[RFC2119]</dt>
+      <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd><dt id="RFC4861">[RFC4861]</dt>
       <dd>
 <span class="refAuthor">Narten, T.</span>, <span class="refAuthor">Nordmark, E.</span>, <span class="refAuthor">Simpson, W.</span>, and <span class="refAuthor">H. Soliman</span>, <span class="refTitle">"Neighbor Discovery for IP version 6 (IPv6)"</span>, <span class="seriesInfo">RFC 4861</span>, <span class="seriesInfo">DOI 10.17487/RFC4861</span>, <time datetime="2007-09" class="refDate">September 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4861">https://www.rfc-editor.org/info/rfc4861</a>&gt;</span>. </dd>
+<dd class="break"></dd><dt id="RFC5210">[RFC5210]</dt>
+      <dd>
+<span class="refAuthor">Wu, J.</span>, <span class="refAuthor">Bi, J.</span>, <span class="refAuthor">Li, X.</span>, <span class="refAuthor">Ren, G.</span>, <span class="refAuthor">Xu, K.</span>, and <span class="refAuthor">M. Williams</span>, <span class="refTitle">"A Source Address Validation Architecture (SAVA) Testbed and Deployment Experience"</span>, <span class="seriesInfo">RFC 5210</span>, <span class="seriesInfo">DOI 10.17487/RFC5210</span>, <time datetime="2008-06" class="refDate">June 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5210">https://www.rfc-editor.org/info/rfc5210</a>&gt;</span>. </dd>
 <dd class="break"></dd><dt id="RFC5227">[RFC5227]</dt>
       <dd>
 <span class="refAuthor">Cheshire, S.</span>, <span class="refTitle">"IPv4 Address Conflict Detection"</span>, <span class="seriesInfo">RFC 5227</span>, <span class="seriesInfo">DOI 10.17487/RFC5227</span>, <time datetime="2008-07" class="refDate">July 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5227">https://www.rfc-editor.org/info/rfc5227</a>&gt;</span>. </dd>
@@ -2028,7 +2075,7 @@ li > p:last-of-type:only-child {
 <span class="refAuthor">Rabadan, J., Ed.</span>, <span class="refAuthor">Sathappan, S.</span>, <span class="refAuthor">Nagaraj, K.</span>, <span class="refAuthor">Hankins, G.</span>, and <span class="refAuthor">T. King</span>, <span class="refTitle">"Operational Aspects of Proxy ARP/ND in Ethernet Virtual Private Networks"</span>, <span class="seriesInfo">RFC 9161</span>, <span class="seriesInfo">DOI 10.17487/RFC9161</span>, <time datetime="2022-01" class="refDate">January 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9161">https://www.rfc-editor.org/info/rfc9161</a>&gt;</span>. </dd>
 <dd class="break"></dd><dt id="I-D.sajassi-bess-evpn-first-hop-security">[I-D.sajassi-bess-evpn-first-hop-security]</dt>
       <dd>
-<span class="refAuthor">Sajassi, A.</span>, <span class="refAuthor">Krattiger, L.</span>, <span class="refAuthor">ananthamurthy, K.</span>, and <span class="refAuthor">S. Thoria</span>, <span class="refTitle">"EVPN First Hop Security"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-sajassi-bess-evpn-first-hop-security-01</span>, <time datetime="2023-07-26" class="refDate">26 July 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-sajassi-bess-evpn-first-hop-security-01">https://datatracker.ietf.org/doc/html/draft-sajassi-bess-evpn-first-hop-security-01</a>&gt;</span>. </dd>
+<span class="refAuthor">Sajassi, A.</span>, <span class="refAuthor">Krattiger, L.</span>, <span class="refAuthor">Ananthamurthy, K.</span>, <span class="refAuthor">Rabadan, J.</span>, and <span class="refAuthor">W. Lin</span>, <span class="refTitle">"EVPN First Hop Security"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-sajassi-bess-evpn-first-hop-security-02</span>, <time datetime="2024-02-22" class="refDate">22 February 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-sajassi-bess-evpn-first-hop-security-02">https://datatracker.ietf.org/doc/html/draft-sajassi-bess-evpn-first-hop-security-02</a>&gt;</span>. </dd>
 <dd class="break"></dd></dl>
 </section>
 <section id="section-12">
