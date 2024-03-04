@@ -14,7 +14,7 @@
 <?rfc authorship="yes"?>
 <?rfc tocappendix="yes"?>
 <rfc  xmlns:xi="http://www.w3.org/2001/XInclude" category="info" ipr='trust200902' tocInclude="true"  obsoletes=""
-updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docName="draft-levyabegnoli-bess-EVPN-savi-00" >
+updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docName="draft-levyabegnoli-bess-evpn-savi-02" >
 
 <front>
   <title abbrev="SAVI in an EVPN network">SAVI in an EVPN network</title>
@@ -68,18 +68,25 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 
    <t>
      Source Address Validation procedures have been specified in the SAVI Working Group and provide a set of mechanisms and state
-     machines to verify Source Address ownership. The main mechanisms are described in <xref target="RFC6620"/> and
-     <xref target="RFC7513"/>.
+     machines to verify Source Address ownership. The main mechanisms are described in RFC6620 and RFC7513.
    </t>
    <t>
-     <xref target="RFC7432"/> and furthermore <xref target="RFC9161"/> specify how an EVPN network could learn and distribute IP
-     addresses. <xref target="RFC9161"/>  describes a mechanism by which the PE can proxy some ND messages based on this information.
+     RFC7432 and furthermore RFC9161 specify how an EVPN network could learn and distribute IP addressess.
+     RFC9161 describes a mechanism by which the PE can proxy some ND messages based on this information.
    </t>
    <t>
      In this document, we review how these two sets of specifications and underlying mechanisms can interact to provide Source
      Address Validation in an EVPN network.
    </t>
    </abstract>
+
+    <note title="Requirements Language">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+      NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+      "MAY", and "OPTIONAL" in this document are to be interpreted as
+      described in <xref target="RFC2119"/>. 
+     </t>
+   </note>
 </front>
 
 <middle>
@@ -99,7 +106,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
     Again, traffic sourced which such addresses can only be forwarded when the address state is “BOUND”.
   </t>
 <t>
-  Section 10 of <xref target="RFC7432">"BGP MPLS-Based Ethernet VPN"</xref>(EVPN) indicates that a Provider Edge (PE) router may learn IP
+  Section 10 of <xref target="RFC7432">"BGP MPLS-Based Ethernet VPN"</xref> (EVPN) indicates that a Provider Edge (PE) router may learn IP
   addresses and advertise them to other PEs.
   EVPN allows PEs to execute a proxy ARP/ND function that is further detailed in <xref target="RFC9161">"Operational Aspects of Proxy ARP/ND
   in Ethernet Virtual Private Network"</xref>. According to section 3.2 of <xref target="RFC9161"/>, IPv6 addresses should be learnt by
@@ -215,7 +222,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
  |     |      IP: NO_BIND                      |IP: VALID       |
  +-    |      Theft logging                    |                |
 
-(*) Any packet, including a DAD. For DAD and NA, src is found in target field 
+(*) Any packet, including a DAD. For DAD and NA, src is found in target
+field 
 ]]></artwork>
 </figure>
 <t>
@@ -379,12 +387,12 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <ul>
   <li>Sources not validated by SAVI are not learnt nor distributed by EVPN: SAVI does not allow NA to be forwarded (model 1)
   or signaled (model 2) to EVPN.</li>
-  <li>During the validation process for a Source, SAVI (ingress) originates a broadcast DAD, with target set to  “Source”
+  <li>During the validation process for a Source, SAVI (ingress) originates a broadcast DAD, with target set to  "Source"
   and forwards (model 1) or signals (model 2) it to EVPN, which delivers it to remote SAVI devices (over the wire or an API).
   Only SAVI devices that have a local validated entry or a trusted interface forward the DAD to enable the target to defend itself.</li>
-  <li>In case a response is sent by one of the DAD recipients, it is a broadcast NA (to “all-nodes”), processed by SAVI (egress).
+  <li>In case a response is sent by one of the DAD recipients, it is a broadcast NA (to "all-nodes"), processed by SAVI (egress).
   The source is expected to be a SAVI validated source, and as such, delivered from (egress) SAVI to EVPN for delivery to all VTEPs and finally
-  to (ingress) SAVI to complete the validation process of the target “Source”.</li>
+  to (ingress) SAVI to complete the validation process of the target "Source".</li>
   <li>The first NA sent by this Source triggers EVPN proxy learning and EVPN distribution to all VTEPs per  <xref target="RFC9161"/>.</li>
 </ul>
 
@@ -414,7 +422,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 </ol>
 
 <t>
-  It is important to note that EVPN table is simply a “helper” for SAVI verification. It may happen that the entry is not
+  It is important to note that EVPN table is simply a "helper" for SAVI verification. It may happen that the entry is not
   present in the EVPN table due to following reasons:
 </t>
 <ul>
@@ -429,7 +437,7 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <t>
   Similarly, in the case the EVPN lookup for the IP returns a local entry, SAVI will also fallback on broadcasting the DAD NS 
   used for verification to all remote SAVI-PEs. This may happen if EVPN installs the entry for IP before SAVI get a chance to 
-  initiate the verification process, which could be the case in “loose-mode” described below.
+  initiate the verification process, which could be the case in "loose-mode" described below.
 </t>
 
 <section anchor="not_found"> <name>Address not found</name>
@@ -475,8 +483,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 <t>
   If the MACs (bound to IP) are the same on both locations, the EVPN MAC mobility procedure may start immediately after detection
   of the MAC at the new location, and traffic from the IP can be allowed "optimistically", to the exception of ARP/ND/DHCP messages
-  that could change the status-quo (mac, dhcp lease, etc.). See case 1 in the figure below.  This is sometimes referred to as “loose mode”
-  as opposed to “strict mode” (nothing allowed till validation is complete).
+  that could change the status-quo (mac, dhcp lease, etc.). See case 1 in the figure below.  This is sometimes referred to as "loose mode"
+  as opposed to "strict mode" (nothing allowed till validation is complete).
 </t>
 <t>
   By doing so, traffic will resume to new location as soon as BGP has re-converged, and in case of an IP-theft, mobility procedure
@@ -581,8 +589,8 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
   The Source Address Validation Architecture (SAVA) <xref target="RFC5210"/> proposes a multi-fence approach
   that implements SAV at three levels of the network: access, intra-domain, and inter-domain.
 
-  As described in <xref target="RFC6620"/> and <xref target="RFC7039"/> the applicability of FCFS SAVI is limited to the local traffic, i.e.,
-  to verify if the traffic generated by the hosts attached to the local link contains a valid source address.
+  As described in <xref target="RFC6620"/> and <xref target="RFC7039"/> the applicability of FCFS SAVI is limited to local
+  traffic, to verify if the traffic generated by the hosts attached to the local link contains a valid source address.
   The verification of the source address of the inter-subnet traffic is out of the scope of FCFS SAVI.
 
   Other techniques are recommended to validate inter-subnet traffic. The scope of the Source Address Validation in Intra-domain
@@ -616,8 +624,10 @@ updates="" consensus="true" submissionType="IETF" xml:lang="en" version="3" docN
 
 <back>
 
-   <references > <name>Normative References</name>
+  <references > <name>Normative References</name>
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml'/> <!-- Key words for use in RFCs to Indicate Requirement Levels -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4861.xml'/> <!-- neighbor Discovery for IP version 6 (IPv6) -->
+      <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5210.xml'/> <!-- A Source Address Validation Architecture (SAVA) Testbed -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5227.xml'/> <!-- IPv4 Address Conflict Detection -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6620.xml'/> <!-- FCFS SAVI: First-Come, First-Served Source -->
       <xi:include href='https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6085.xml'/> <!-- Address Mapping of IPv6 Multicast Packets on Ethernet -->
